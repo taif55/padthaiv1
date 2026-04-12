@@ -1969,6 +1969,16 @@ code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`;
             } catch (err) { alert("เกิดข้อผิดพลาด: " + err.message); }
         };
     </script>
+    <script>
+        // เริ่มระบบจัดการไฟล์ Offline (Service Worker)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Padthai Offline: Active'))
+                    .catch(err => console.log('Offline Error:', err));
+            });
+        }
+    </script>
 </body>
 </html>
 
