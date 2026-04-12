@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pocket DJ Studio - 2 Layers Edition</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -1969,15 +1968,6 @@ code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`;
                 });
             } catch (err) { alert("เกิดข้อผิดพลาด: " + err.message); }
         };
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Padthai Offline: Ready'))
-                    .catch(err => console.log('Offline Error:', err));
-            });
-        }
     </script>
 </body>
 </html>
