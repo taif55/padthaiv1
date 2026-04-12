@@ -174,7 +174,7 @@
     <div id="mainView">
         
         <div class="header-section mt-1 mb-1">
-            <h1 class="text-sm font-black text-white italic uppercase tracking-wider">Pocket DJ <span class="text-orange-500">PADTHAI</h1>
+            <h1 class="text-sm font-black text-white italic uppercase tracking-wider">Pocket DJ <span class="text-orange-500">Ultimate</span></h1>
             
             <div class="flex items-center space-x-3">
                 <div class="flex flex-col items-center">
@@ -341,9 +341,8 @@
                 <div class="bg-gray-900/40 p-1 rounded-xl border border-gray-800 flex items-center justify-between px-2">
                     <span class="text-[8px] text-gray-500 font-bold uppercase">FX</span>
                     <select id="cFX" class="bg-transparent text-[9px] font-black text-green-400 uppercase outline-none text-right flex-1 ml-1" onchange="updateSelectedClip()">
-                        <option value="o">STATIC</option><option value="u">FADE UP</option><option value="f">FADE OUT</option><option value="s">STROBE</option><option value="b">BLINK</option>
-                        <option value="w">WAVE</option><option value="r">RANDOM</option><option value="p">PULSE</option><option value="d">DROP</option><option value="z">ZIGZAG</option><option value="h">H-STROBE</option>
-                    </select>
+                        <option value="v">MT. FUJI</option><option value="o">STATIC</option><option value="u">FADE UP</option><option value="f">FADE OUT</option><option value="s">STROBE</option><option value="b">BLINK</option>
+                        <option value="w">WAVE</option><option value="r">RANDOM</option><option value="p">PULSE</option><option value="d">DROP</option><option value="z">ZIGZAG</option><option value="h">H-STROBE</option>             </select>
                 </div>
             </div>
 
@@ -586,9 +585,55 @@
         let isDraggingPad = false;
 
         let activeColorIndex = -1; 
+        // 🟢 ฟังก์ชันบีบอัด (Compress)
+        function compressLEDs(targetStr) {
+            if (!targetStr || targetStr === 'a') return 'a';
+            let nums = targetStr.match(/\d+/g);
+            if (!nums) return targetStr;
+            
+            nums = [...new Set(nums.map(Number))].sort((a, b) => a - b);
+            let result = "";
+            let start = nums[0];
+            let end = nums[0];
+
+            for (let i = 1; i < nums.length; i++) {
+                if (nums[i] === end + 1) {
+                    end = nums[i];
+                } else {
+                    result += (start === end) ? `<${start}>` : `<${start}-${end}>`;
+                    start = nums[i];
+                    end = nums[i];
+                }
+            }
+            result += (start === end) ? `<${start}>` : `<${start}-${end}>`;
+            return result;
+        }
+
+        // 🟢 ฟังก์ชันคลายบีบอัด (Expand)
+        function expandLEDs(compressedStr) {
+            if (!compressedStr || compressedStr === 'a') return 'a';
+            let result = "";
+            let blocks = compressedStr.match(/<[^>]+>/g); 
+            if (!blocks) return compressedStr;
+            
+            blocks.forEach(block => {
+                let inner = block.replace(/<|>/g, '');
+                if (inner.includes('-')) {
+                    let parts = inner.split('-');
+                    let start = parseInt(parts[0]);
+                    let end = parseInt(parts[1]);
+                    for (let i = start; i <= end; i++) {
+                        result += `<${i}>`;
+                    }
+                } else {
+                    result += `<${inner}>`;
+                }
+            });
+            return result;
+        }
 
         const colorMap = { 'bl': '#0000FF', 're': '#FF0000', 'gr': '#00FF00', 'ye': '#FFFF00', 'wh': '#FFFFFF', 'pu': '#8000FF', 'aq': '#00FFFF', 'or': '#FF8000', 'pk': '#FF00FF', 'cy': '#00FFFF' };
-        const fxNames = { o: 'STATIC', u: 'FADE UP', f: 'FADE OUT', s: 'STROBE', b: 'BLINK', w: 'WAVE', r: 'RANDOM', p: 'PULSE', d: 'DROP', z: 'ZIGZAG', h: 'H-STROBE' };
+        const fxNames = { o: 'STATIC', u: 'FADE UP', f: 'FADE OUT', s: 'STROBE', b: 'BLINK', w: 'WAVE', r: 'RANDOM', p: 'PULSE', d: 'DROP', z: 'ZIGZAG', h: 'H-STROBE', v: 'MT. FUJI' };
 
         function remoteEditAction(actionCallback) {
             if (activeIdxBG === -1) return; 
@@ -627,7 +672,9 @@
                             id: Date.now() + i, 
                             start: s_val, 
                             bright: b_val, 
-                            target: content[1], 
+                            // 🔴 ของเดิม: target: content[1],
+                            // 🟢 ให้แก้เป็นบรรทัดนี้:
+                            target: expandLEDs(content[1]),
                             color: content[2], 
                             fx: content[3].charAt(0), 
                             duration: d_val, 
@@ -866,7 +913,9 @@
                             id: Date.now() + i, 
                             start: s_val, 
                             bright: b_val, 
-                            target: content[1], 
+                            // 🔴 ของเดิม: target: content[1],
+                            // 🟢 ให้แก้เป็นบรรทัดนี้:
+                            target: expandLEDs(content[1]), 
                             color: content[2], 
                             fx: content[3].charAt(0), 
                             duration: d_val, 
@@ -1662,7 +1711,9 @@
                 
                 let d = Math.max(1, Math.min(999, Math.round(c.duration*100))).toString().padStart(3,'0');
                 
-                code += `${m}(${s}${b},${c.target || 'a'},${c.color},${c.fx}${d}00)`; 
+                // ของเดิม: code += `${m}(${s}${b},${c.target || 'a'},${c.color},${c.fx}${d}00)`; 
+// แก้เป็น:
+code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00)`;
             });
             return code;
         }
@@ -1727,7 +1778,7 @@
                 duration: beatTime, 
                 target: "", 
                 color: "bl", 
-                fx: "o", 
+                fx: "v", 
                 bright: 10, 
                 loop: 1, 
                 mirror: false, 
@@ -1831,6 +1882,8 @@
                 else if (c.fx === 'p') f = Math.pow(Math.sin(Math.PI * p), 4);
                 else if (c.fx === 'd') f = Math.pow(1.0 - p, 4);
                 else if (c.fx === 'z') f = 1.0 - ((p * 4.0) % 1.0);
+                // 🟢 แทรกบรรทัดนี้ต่อท้ายลงไปครับ:
+                else if (c.fx === 'v') f = Math.sin(Math.PI * p);
                 let br = Math.max(0, Math.min(99, Math.round(c.bright * f)));
                 let bStr = br.toString().padStart(2, '0');
                 let m = c.mirror ? 'm' : '';
@@ -1839,7 +1892,9 @@
                 let idx = Math.floor(p / step);
                 if (idx >= colorCodes.length) idx = colorCodes.length - 1;
                 let showColor = colorCodes[idx] || colorCodes[0];
-                code += `${m}(000${bStr},${c.target || 'a'},${showColor},o99900)`; 
+                // ของเดิม: code += `${m}(000${bStr},${c.target || 'a'},${showColor},o99900)`; 
+// แก้เป็น:
+code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`; 
             });
             throttledBleWrite('scrub', code, 'withoutResponse', 40);
         }
