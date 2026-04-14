@@ -89,6 +89,13 @@
             border: 2px solid #3b82f6; 
             background-color: rgba(30, 58, 138, 0.2); 
         }
+        .layer-fl { 
+            flex: 0 0 12%; 
+            border: 2px solid #ec4899; 
+            background-color: rgba(131, 24, 67, 0.2); 
+            margin-top: 5px;
+            padding-bottom: 10px;
+        }
 
         .layer-title {
             position: absolute;
@@ -255,7 +262,12 @@
                 <button id="stopBtnFG" onclick="stopFG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP FG</button>
             </div>
         </div>
-
+<div class="layer-block layer-fl">
+                <h2 class="layer-title text-pink-500">FRONT LIGHT LAYER</h2>
+                <div class="pad-container mt-3">
+                    <div id="padGridFL" class="grid grid-cols-7 gap-2"></div>
+                </div>
+            </div>
     </div>
 
     <div id="modal" class="fixed inset-0 hidden z-40 flex flex-col bg-[#050505] pb-[40px]">
@@ -1989,6 +2001,7 @@ code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`;
             } catch (err) { alert("เกิดข้อผิดพลาด: " + err.message); }
         };
     </script>
+    
 </body>
 </html>
 
