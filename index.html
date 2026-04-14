@@ -1161,7 +1161,7 @@
         };
 
         function renderLayerPads(layer) {
-            const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+            const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridSP');
             const grid = document.getElementById(gridId);
             
             if (!grid) {
@@ -1169,8 +1169,8 @@
             }
 
             grid.innerHTML = '';
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
-            let activeIdx = (layer === 'BG') ? activeIdxBG : activeIdxFG;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
+            let activeIdx = (layer === 'BG') ? activeIdxBG : (layer === 'FG' ? activeIdxFG : activeIdxSP);
 
             patterns.forEach((p, index) => {
                 const btn = document.createElement('div');
@@ -1199,21 +1199,22 @@
             updatePadsVisuals(layer); 
         }
 
-        function renderPads() {
+       function renderPads() {
             loadPatternOrder(); 
             renderLayerPads('BG');
             renderLayerPads('FG');
+            renderLayerPads('SP');
         }
 
         function setupSortable(layer) {
             try {
                 if (typeof Sortable === 'undefined') return;
 
-                const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+                const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridSP');
                 const grid = document.getElementById(gridId);
                 if (!grid) return;
 
-                let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+                let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
                 
                 const config = {
                     animation: 150, delay: 250, delayOnTouchOnly: false, touchStartThreshold: 5,
@@ -1228,9 +1229,12 @@
                         if(layer === 'BG') {
                             if(activeIdxBG === evt.oldIndex) activeIdxBG = evt.newIndex;
                             else if(activeIdxBG === evt.newIndex) activeIdxBG = evt.oldIndex;
-                        } else {
+                        } else if(layer === 'FG') {
                             if(activeIdxFG === evt.oldIndex) activeIdxFG = evt.newIndex;
                             else if(activeIdxFG === evt.newIndex) activeIdxFG = evt.oldIndex;
+                        } else {
+                            if(activeIdxSP === evt.oldIndex) activeIdxSP = evt.newIndex;
+                            else if(activeIdxSP === evt.newIndex) activeIdxSP = evt.oldIndex;
                         }
                         savePatternOrder(layer); 
                         renderLayerPads(layer); 
@@ -1241,20 +1245,23 @@
                 if(layer === 'BG') {
                     if (sortableBG) sortableBG.destroy();
                     sortableBG = new Sortable(grid, config);
-                } else {
+                } else if(layer === 'FG') {
                     if (sortableFG) sortableFG.destroy();
                     sortableFG = new Sortable(grid, config);
+                } else {
+                    if (sortableSP) sortableSP.destroy();
+                    sortableSP = new Sortable(grid, config);
                 }
             } catch (err) {}
         }
 
         function updatePadsVisuals(layer) {
-            const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+            const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridSP');
             const grid = document.getElementById(gridId);
             if (!grid) return;
 
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
-            let activeIdx = (layer === 'BG') ? activeIdxBG : activeIdxFG;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
+            let activeIdx = (layer === 'BG') ? activeIdxBG : (layer === 'FG' ? activeIdxFG : activeIdxSP);
             const btns = grid.children;
             patterns.forEach((p, index) => {
                 const btn = btns[index];
@@ -1269,7 +1276,7 @@
                 }
             });
 
-            const stopBtn = document.getElementById(layer === 'BG' ? 'stopBtnBG' : 'stopBtnFG');
+            const stopBtn = document.getElementById(layer === 'BG' ? 'stopBtnBG' : (layer === 'FG' ? 'stopBtnFG' : 'stopBtnSP'));
             if (stopBtn) {
                 if (layer === 'BG') {
                     if (activeIdx !== -1) {
@@ -1286,7 +1293,6 @@
                 }
             }
         }
-
         function playFX(idx, btnElement, layer) {
             clearActiveScaleBtns();
             const parentBlock = layer === 'BG' ? document.querySelector('.layer-bg') : document.querySelector('.layer-fg');
@@ -1300,7 +1306,7 @@
                 if (btn) { btn.innerText = "STOP"; btn.classList.replace('bg-blue-600', 'bg-red-600'); } 
             }
             
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
             if (layer === 'BG') {
                 activeIdxBG = idx;
                 localStorage.setItem('lastActiveBG', idx); 
@@ -1314,12 +1320,10 @@
 
                 if(!characteristic || !patterns[idx].code) return;
                 
-                // ✅ นำโค้ดส่วนนี้ไปวางแทนที่
             const parentBlock = document.querySelector('.layer-bg');
             const activeScaleBtn = parentBlock.querySelector('button.bg-green-700');
             
             if (activeScaleBtn) {
-                // ถ้ามีปุ่ม Scale (Room) กระพริบทำงานอยู่ ให้จำลองการกดปุ่มเพื่อคำนวณความเร็วอัตโนมัติ
                 let scaleText = activeScaleBtn.innerText.trim();
                 let beats = 1;
                 if (scaleText === '1/2') beats = 0.5;
@@ -1328,11 +1332,10 @@
                 
                 remoteEditAction(() => setRoomScale(beats));
             } else {
-                // ถ้าไม่ได้เลือกปุ่ม Scale ไว้ ให้รันข้อมูลดิบสปีดเดิม
                 safeBleWrite("T1.00");
                 safeBleWrite("5" + patterns[idx].code);
             }
-            } else {
+            } else if (layer === 'FG') {
                 activeIdxFG = idx;
                 localStorage.setItem('lastActiveFG', idx); 
                 
@@ -1342,6 +1345,16 @@
 
                 if(!characteristic || !patterns[idx].code) return;
                 safeBleWrite("FG:5" + patterns[idx].code);
+            } else if (layer === 'SP') {
+                activeIdxSP = idx;
+                localStorage.setItem('lastActiveSP', idx); 
+                
+                document.querySelectorAll('#padGridSP .pad-btn').forEach(b => b.classList.remove('playing'));
+                if(btnElement) btnElement.classList.add('playing'); 
+                updatePadsVisuals('SP'); 
+
+                if(!characteristic || !patterns[idx].code) return;
+                safeBleWrite("SP:5" + patterns[idx].code);
             }
         }
 
@@ -1358,6 +1371,12 @@
             updatePadsVisuals('FG');
             if(characteristic) safeBleWrite("FG:off");
         }
+        function stopSP() {
+            activeIdxSP = -1; 
+            localStorage.setItem('lastActiveSP', -1);
+            updatePadsVisuals('SP');
+            if(characteristic) safeBleWrite("SP:off");
+        }
 
         function markUnsaved() { 
             saveState(); 
@@ -1373,7 +1392,7 @@
             document.getElementById('editorBpmDisplay').innerText = editorBPM;
             editorTapTimes = [];
 
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+           let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
             let rawCode = patterns[idx].code || "";
             let brackets = rawCode.match(/m?\(([^)]+)\)/g);
             if (brackets) {
@@ -1437,15 +1456,15 @@
             const btn = document.getElementById('playBtn'); 
             if (btn) { btn.innerText = "STOP"; btn.classList.replace('bg-blue-600', 'bg-red-600'); } 
             
-            let patterns = (activeLayer === 'BG') ? bgPatterns : fgPatterns;
+           let patterns = (activeLayer === 'BG') ? bgPatterns : (activeLayer === 'FG' ? fgPatterns : spPatterns);
             patterns[selectedIdx].code = generateCodeStr();
-            let prefix = (activeLayer === 'BG') ? 'SB' : 'SF';
-            let playPrefix = (activeLayer === 'BG') ? '5' : 'FG:5';
+            let prefix = (activeLayer === 'BG') ? 'SB' : (activeLayer === 'FG' ? 'SF' : 'SSP');
+            let playPrefix = (activeLayer === 'BG') ? '5' : (activeLayer === 'FG' ? 'FG:5' : 'SP:5');
 
             if(characteristic) {
                 safeBleWrite(`${prefix}${selectedIdx}:${patterns[selectedIdx].code}`, 'withResponse');
                 
-                let activeLiveIdx = (activeLayer === 'BG') ? activeIdxBG : activeIdxFG;
+                let activeLiveIdx = (activeLayer === 'BG') ? activeIdxBG : (activeLayer === 'FG' ? activeIdxFG : activeIdxSP);
                 if (activeLiveIdx === selectedIdx) {
                     safeBleWrite(playPrefix + patterns[selectedIdx].code);
                 }
@@ -1457,7 +1476,6 @@
                 history.replaceState(null, null, window.location.pathname);
             }
         }
-
         function unsaveAndExit() {
             isPlaying = false;
             cancelAnimationFrame(playInterval);
@@ -1929,10 +1947,10 @@ code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00
 
         function updateCodeMonitor() { document.getElementById('liveCode').innerText = generateCodeStr() || "CODE..."; }
         
-        function sendFullCodeToBT() { 
+       function sendFullCodeToBT() { 
             if(!characteristic) return; 
             let codeStr = generateCodeStr();
-            let cmd = (activeLayer === 'BG') ? "5" + codeStr : "FG:5" + codeStr;
+            let cmd = (activeLayer === 'BG') ? "5" + codeStr : (activeLayer === 'FG' ? "FG:5" + codeStr : "SP:5" + codeStr);
             safeBleWrite(cmd);
         }
         
@@ -1944,13 +1962,13 @@ code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00
             let activeClips = clips.filter(c => playheadTime >= c.start && playheadTime <= c.start + c.duration);
             if (activeClips.length === 0) {
                 if (!lastSentOff) {
-                    throttledBleWrite('scrub', (activeLayer === 'BG') ? "off" : "FG:off", 'withoutResponse', 40);
+                    throttledBleWrite('scrub', (activeLayer === 'BG') ? "off" : (activeLayer === 'FG' ? "FG:off" : "SP:off"), 'withoutResponse', 40);
                     lastSentOff = true;
                 }
                 return;
             }
             lastSentOff = false;
-            let code = (activeLayer === 'BG') ? "5" : "FG:5";
+            let code = (activeLayer === 'BG') ? "5" : (activeLayer === 'FG' ? "FG:5" : "SP:5");
             activeClips.forEach(c => {
                 let p = (playheadTime - c.start) / c.duration;
                 if(p < 0) p = 0; if(p > 1) p = 1;
