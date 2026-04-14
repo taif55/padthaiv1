@@ -1676,25 +1676,45 @@
         }
 
         function renderLEDGrid() {
-            const grid = document.getElementById('ledGrid'); grid.innerHTML = '';
+            const grid = document.getElementById('ledGrid'); 
             const c = clips.find(x => x.id === selectedClipId);
-            if(!c) return;
+            if(!c) { grid.innerHTML = ''; return; }
             const markers = [7,8,9,10, 18,19,20,21, 29,30,31,32, 37,38,39,40, 48,49,50,51, 59,60,61,62, 68,69,70];
+            
+            // 🚀 ป้องกันอาการกระตุก: ถ้ามี 300 หลอดถูกสร้างไว้แล้ว ให้อัปเดตแค่ Class สี ไม่ต้องสร้างใหม่
+            if (grid.children.length === 300) {
+                for(let i=1; i<=300; i++) {
+                    let d = grid.children[i-1];
+                    let isMarked = markers.includes(i) ? 'led-mark' : 'border-[#222]';
+                    let isActive = c.target.includes('<'+i+'>') ? 'led-active' : 'bg-[#111] text-gray-400';
+                    d.className = `text-[8px] h-6 border rounded flex items-center justify-center cursor-pointer ${isMarked} ${isActive}`;
+                }
+                return; // จบการทำงานตรงนี้เลย ไม่ต้องไปทำลายทิ้งด้านล่าง
+            }
+
+            // จะทำงานมาถึงตรงนี้ เฉพาะตอนเปิดหน้า Edit ครั้งแรกเท่านั้น
+            grid.innerHTML = '';
             for(let i=1; i<=300; i++) { 
                 const d = document.createElement('div'); d.innerText = i;
                 let isMarked = markers.includes(i) ? 'led-mark' : 'border-[#222]';
                 let isActive = c.target.includes('<'+i+'>') ? 'led-active' : 'bg-[#111] text-gray-400';
                 d.className = `text-[8px] h-6 border rounded flex items-center justify-center cursor-pointer ${isMarked} ${isActive}`;
+                
                 d.addEventListener('click', (e) => { 
+                    // ดึงค่า currentClip ล่าสุดเสมอ ป้องกันบั๊กจำค่าผิดเมื่อจิ้มหลอดไฟ
+                    let currentClip = clips.find(x => x.id === selectedClipId);
+                    if (!currentClip) return;
+
                     let targetStr = '<' + i + '>';
-                    let pair = c.mirror ? (69 - i) : null;
+                    let pair = currentClip.mirror ? (301 - i) : null; // อัปเดตเงาสะท้อนเป็น 300 หลอด
                     let pairStr = pair ? '<' + pair + '>' : '';
-                    if(c.target.includes(targetStr)) { 
-                        c.target = c.target.replace(targetStr,''); 
-                        if(pairStr) c.target = c.target.replace(pairStr,'');
+                    
+                    if(currentClip.target.includes(targetStr)) { 
+                        currentClip.target = currentClip.target.replace(targetStr,''); 
+                        if(pairStr) currentClip.target = currentClip.target.replace(pairStr,'');
                     } else { 
-                        c.target += targetStr; 
-                        if(pairStr && !c.target.includes(pairStr)) c.target += pairStr;
+                        currentClip.target += targetStr; 
+                        if(pairStr && !currentClip.target.includes(pairStr)) currentClip.target += pairStr;
                     } 
                     markUnsaved(); renderLEDGrid(); updateSelectedClip(); 
                 });
