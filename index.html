@@ -580,7 +580,9 @@
 
         let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         let fgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
-        
+        let flPatterns = Array.from({length: 7}, (_, i) => ({ id: i, code: "" }));
+        let activeIdxFL = -1;
+        let sortableFL = null;
         let clips = []; 
         let activeLayer = 'BG'; 
         let activeIdxBG = -1;
@@ -1114,7 +1116,7 @@
         };
 
         function renderLayerPads(layer) {
-            const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+            const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridFL');
             const grid = document.getElementById(gridId);
             
             if (!grid) {
@@ -1122,8 +1124,8 @@
             }
 
             grid.innerHTML = '';
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
-            let activeIdx = (layer === 'BG') ? activeIdxBG : activeIdxFG;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG') ? fgPatterns : flPatterns;
+            let activeIdx = (layer === 'BG') ? activeIdxBG : (layer === 'FG') ? activeIdxFG : activeIdxFL;
 
             patterns.forEach((p, index) => {
                 const btn = document.createElement('div');
@@ -1156,6 +1158,7 @@
             loadPatternOrder(); 
             renderLayerPads('BG');
             renderLayerPads('FG');
+            renderLayerPads('FL');
         }
 
         function setupSortable(layer) {
@@ -1194,20 +1197,23 @@
                 if(layer === 'BG') {
                     if (sortableBG) sortableBG.destroy();
                     sortableBG = new Sortable(grid, config);
-                } else {
+               } else if(layer === 'FG') {
                     if (sortableFG) sortableFG.destroy();
                     sortableFG = new Sortable(grid, config);
+                } else if(layer === 'FL') {
+                    if (sortableFL) sortableFL.destroy();
+                    sortableFL = new Sortable(grid, config);
                 }
             } catch (err) {}
         }
 
         function updatePadsVisuals(layer) {
-            const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+            const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridFL');
             const grid = document.getElementById(gridId);
             if (!grid) return;
 
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
-            let activeIdx = (layer === 'BG') ? activeIdxBG : activeIdxFG;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG') ? fgPatterns : flPatterns;
+            let activeIdx = (layer === 'BG') ? activeIdxBG : (layer === 'FG') ? activeIdxFG : activeIdxFL;
             const btns = grid.children;
             patterns.forEach((p, index) => {
                 const btn = btns[index];
@@ -1296,6 +1302,17 @@
                 if(!characteristic || !patterns[idx].code) return;
                 safeBleWrite("FG:5" + patterns[idx].code);
             }
+            else if (layer === 'FL') {
+                activeIdxFL = idx;
+                localStorage.setItem('lastActiveFL', idx); 
+                
+                document.querySelectorAll('#padGridFL .pad-btn').forEach(b => b.classList.remove('playing'));
+                if(btnElement) btnElement.classList.add('playing'); 
+                updatePadsVisuals('FL'); 
+
+                if(!characteristic || !patterns[idx].code) return;
+                safeBleWrite("FL:5" + patterns[idx].code);
+            }
         }
 
         function stopBG() {
@@ -1326,7 +1343,7 @@
             document.getElementById('editorBpmDisplay').innerText = editorBPM;
             editorTapTimes = [];
 
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG') ? fgPatterns : flPatterns;
             let rawCode = patterns[idx].code || "";
             let brackets = rawCode.match(/m?\(([^)]+)\)/g);
             if (brackets) {
