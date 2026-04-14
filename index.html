@@ -175,12 +175,12 @@
         }
     </style>
 </head>
-<body>
 
+<body>
     <div id="mainView">
         
         <div class="header-section mt-1 mb-1">
-            <h1 class="text-sm font-black text-white italic uppercase tracking-wider">Pocket DJ <span class="text-orange-500">PADTHAI</h1>
+            <h1 class="text-sm font-black text-white italic uppercase tracking-wider">Pocket DJ <span class="text-orange-500">PADTHAI</span></h1>
             
             <div class="flex items-center space-x-3">
                 <div class="flex flex-col items-center">
@@ -237,7 +237,7 @@
             </div>
         </div>
 
-        <div class="layer-block layer-fg">
+        <div class="layer-block layer-fg mt-1">
             <h2 class="layer-title text-blue-500">FOREGROUND LAYER</h2>
             
             <div class="flex space-x-2 mb-1 bg-gray-900/50 p-1.5 px-3 mx-1 rounded-xl flex-none mt-1">
@@ -261,7 +261,8 @@
                 <button id="stopBtnFG" onclick="stopFG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP FG</button>
             </div>
         </div>
-<div class="layer-block layer-sp mt-1">
+
+        <div class="layer-block layer-sp mt-1">
             <h2 class="layer-title text-pink-500">SPECIAL FX LAYER</h2>
             
             <div class="flex space-x-2 mb-1 bg-gray-900/50 p-1.5 px-3 mx-1 rounded-xl flex-none mt-1">
@@ -315,12 +316,10 @@
         </div>
 
         <div class="bg-gray-900 border-b border-gray-800 p-2 flex items-center justify-between flex-none overflow-hidden w-full box-border">
-            
             <div class="flex items-center space-x-1 flex-shrink-0">
                 <button onclick="fitToScreen()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-1.5 py-1.5 rounded-lg text-[9px] font-black shadow-lg">FIT</button>
                 <button id="followBtn" onclick="toggleFollow()" class="bg-gray-700 text-white px-1.5 py-1.5 rounded-lg text-[9px] font-bold">FOL</button>
             </div>
-            
             <div class="flex items-center space-x-0.5 flex-1 justify-center px-1">
                 <button onclick="setActiveScaleBtn(event.currentTarget); setRoomScale(8)" class="flex-1 max-w-[28px] bg-gray-800 text-green-400 py-1.5 rounded border border-gray-600 text-[8px] font-bold active:bg-gray-700 transition">8</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); setRoomScale(6)" class="flex-1 max-w-[28px] bg-gray-800 text-green-400 py-1.5 rounded border border-gray-600 text-[8px] font-bold active:bg-gray-700 transition">6</button>
@@ -330,32 +329,24 @@
                 <button onclick="setActiveScaleBtn(event.currentTarget); setRoomScale(0.5)" class="flex-1 max-w-[28px] bg-gray-800 text-green-400 py-1.5 rounded border border-gray-600 text-[8px] font-bold active:bg-gray-700 transition">1/2</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); setRoomScale(0.25)" class="flex-1 max-w-[28px] bg-gray-800 text-green-400 py-1.5 rounded border border-gray-600 text-[8px] font-bold active:bg-gray-700 transition">1/4</button>
             </div>
-            
             <div class="flex items-center space-x-1 flex-shrink-0">
                 <span id="editorBpmDisplay" class="text-lg text-white font-black px-1.5 py-0.5 rounded border border-gray-700 bg-gray-800 cursor-pointer active:bg-gray-700 transition">128</span>
                 <button id="editorTapBtn" onpointerdown="editorTapTempo(event)" class="bg-orange-600 hover:bg-orange-500 text-white px-2 py-1.5 rounded-lg text-[9px] font-black shadow-[0_0_10px_rgba(234,88,12,0.5)] active:scale-95 transition duration-75">TAP</button>
             </div>
-
         </div>
         
         <div id="editorPanel" class="flex-1 flex flex-col p-2 space-y-2 opacity-30 pointer-events-none overflow-hidden">
-            
             <div class="bg-gray-900/40 p-2 rounded-xl border border-gray-800 flex justify-between items-center flex-none w-full box-border">
-                
                 <div class="flex space-x-1 flex-shrink-0 mr-1">
                     <button onclick="addColorSlot()" class="bg-blue-600 text-white font-bold text-[9px] px-2 py-1 rounded shadow">+ ADD</button>
                     <button onclick="delColorSlot()" class="bg-red-900 text-white font-bold text-[9px] px-2 py-1 rounded shadow">- DEL</button>
                 </div>
-                
                 <div id="colorSlots" class="flex items-center space-x-1 flex-1 overflow-x-auto color-scroll pb-1 min-w-0"></div>
-                
                 <div class="flex items-center space-x-1 flex-shrink-0 w-[55px] bg-black/50 p-1 rounded border border-gray-700 ml-1">
                     <span class="text-[6px] text-gray-400 font-bold">SCL</span>
                     <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-[30px] accent-orange-500" onchange="applySpeedScale(this.value)">
                 </div>
-
             </div>
-            
             <div id="colorPalette" class="color-scroll flex flex-nowrap overflow-x-auto gap-2 pb-1 px-1 flex-none"></div>
 
             <div class="grid grid-cols-3 gap-2 flex-none">
@@ -371,7 +362,8 @@
                     <span class="text-[8px] text-gray-500 font-bold uppercase">FX</span>
                     <select id="cFX" class="bg-transparent text-[9px] font-black text-green-400 uppercase outline-none text-right flex-1 ml-1" onchange="updateSelectedClip()">
                         <option value="v">MT. FUJI</option><option value="o">STATIC</option><option value="u">FADE UP</option><option value="f">FADE OUT</option><option value="s">STROBE</option><option value="b">BLINK</option>
-                        <option value="w">WAVE</option><option value="r">RANDOM</option><option value="p">PULSE</option><option value="d">DROP</option><option value="z">ZIGZAG</option><option value="h">H-STROBE</option>             </select>
+                        <option value="w">WAVE</option><option value="r">RANDOM</option><option value="p">PULSE</option><option value="d">DROP</option><option value="z">ZIGZAG</option><option value="h">H-STROBE</option>
+                    </select>
                 </div>
             </div>
 
@@ -401,15 +393,11 @@
     </div>
 
     <script>
-        // ==========================================
-        //  Bluetooth Queue & Throttle System (Auto-Retry)
-        // ==========================================
         let device, characteristic;
         let bleQueue = [];
         let isBleWriting = false;
         let bleThrottleTimers = {};
 
-        // 🚀 NEW: ตัวแปรสำหรับการแจ้งเตือนไฟตก (Hysteresis & Audio)
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let lastLowVoltAlertTime = 0; 
         let isLowVoltageAlertLocked = false; 
@@ -514,8 +502,7 @@
             document.getElementById('powerBarText').innerText = "OFF";
             document.getElementById('powerLabel').innerText = "POWER"; 
         }
-        // ==========================================
-        
+
         let editorBPM = 128; 
         let editorTapTimes = []; 
         let editorTapTimeout = null; 
@@ -595,7 +582,7 @@
             }
         }
 
-       let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
+        let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         let fgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         let spPatterns = Array.from({length: 7}, (_, i) => ({ id: i, code: "" }));
         
@@ -617,7 +604,7 @@
         let isDraggingPad = false;
 
         let activeColorIndex = -1; 
-        // 🟢 ฟังก์ชันบีบอัด (Compress)
+        
         function compressLEDs(targetStr) {
             if (!targetStr || targetStr === 'a') return 'a';
             let nums = targetStr.match(/\d+/g);
@@ -641,7 +628,6 @@
             return result;
         }
 
-        // 🟢 ฟังก์ชันคลายบีบอัด (Expand)
         function expandLEDs(compressedStr) {
             if (!compressedStr || compressedStr === 'a') return 'a';
             let result = "";
@@ -704,8 +690,6 @@
                             id: Date.now() + i, 
                             start: s_val, 
                             bright: b_val, 
-                            // 🔴 ของเดิม: target: content[1],
-                            // 🟢 ให้แก้เป็นบรรทัดนี้:
                             target: expandLEDs(content[1]),
                             color: content[2], 
                             fx: content[3].charAt(0), 
@@ -945,8 +929,6 @@
                             id: Date.now() + i, 
                             start: s_val, 
                             bright: b_val, 
-                            // 🔴 ของเดิม: target: content[1],
-                            // 🟢 ให้แก้เป็นบรรทัดนี้:
                             target: expandLEDs(content[1]), 
                             color: content[2], 
                             fx: content[3].charAt(0), 
@@ -996,6 +978,7 @@
             let slider = document.getElementById(sliderId);
             if(slider) { slider.value = 1.0; updateSpeed(1.0, layer); }
         }
+
         function loadPatternOrder() {
             let savedOrderBG = localStorage.getItem('padOrderBG');
             if (savedOrderBG) {
@@ -1022,7 +1005,8 @@
                     fgPatterns = newPatterns;
                 }
             }
-        let savedOrderSP = localStorage.getItem('padOrderSP');
+            
+            let savedOrderSP = localStorage.getItem('padOrderSP');
             if (savedOrderSP) {
                 let orderArr = savedOrderSP.split(',').map(Number);
                 if (orderArr.length === 7) {
@@ -1161,6 +1145,7 @@
                             renderLayerPads('SP');
                         }
                     }
+                });
                 await safeBleWrite("GET_ALL", 'withResponse');
             } catch (e) { alert("BT Error: " + e.message); }
         };
@@ -1204,7 +1189,7 @@
             updatePadsVisuals(layer); 
         }
 
-       function renderPads() {
+        function renderPads() {
             loadPatternOrder(); 
             renderLayerPads('BG');
             renderLayerPads('FG');
@@ -1298,10 +1283,11 @@
                 }
             }
         }
+
         function playFX(idx, btnElement, layer) {
             clearActiveScaleBtns();
-            const parentBlock = layer === 'BG' ? document.querySelector('.layer-bg') : document.querySelector('.layer-fg');
-            const activeScale = parentBlock.querySelector('button.bg-green-700');
+            const parentBlock = layer === 'BG' ? document.querySelector('.layer-bg') : (layer === 'FG' ? document.querySelector('.layer-fg') : document.querySelector('.layer-sp'));
+            const activeScale = parentBlock ? parentBlock.querySelector('button.bg-green-700') : null;
             if (activeScale) setActiveScaleBtn(activeScale); 
 
             if(isPlaying) {
@@ -1325,21 +1311,18 @@
 
                 if(!characteristic || !patterns[idx].code) return;
                 
-            const parentBlock = document.querySelector('.layer-bg');
-            const activeScaleBtn = parentBlock.querySelector('button.bg-green-700');
-            
-            if (activeScaleBtn) {
-                let scaleText = activeScaleBtn.innerText.trim();
-                let beats = 1;
-                if (scaleText === '1/2') beats = 0.5;
-                else if (scaleText === '1/4') beats = 0.25;
-                else beats = parseFloat(scaleText);
-                
-                remoteEditAction(() => setRoomScale(beats));
-            } else {
-                safeBleWrite("T1.00");
-                safeBleWrite("5" + patterns[idx].code);
-            }
+                if (activeScale) {
+                    let scaleText = activeScale.innerText.trim();
+                    let beats = 1;
+                    if (scaleText === '1/2') beats = 0.5;
+                    else if (scaleText === '1/4') beats = 0.25;
+                    else beats = parseFloat(scaleText);
+                    
+                    remoteEditAction(() => setRoomScale(beats));
+                } else {
+                    safeBleWrite("T1.00");
+                    safeBleWrite("5" + patterns[idx].code);
+                }
             } else if (layer === 'FG') {
                 activeIdxFG = idx;
                 localStorage.setItem('lastActiveFG', idx); 
@@ -1397,7 +1380,7 @@
             document.getElementById('editorBpmDisplay').innerText = editorBPM;
             editorTapTimes = [];
 
-           let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
             let rawCode = patterns[idx].code || "";
             let brackets = rawCode.match(/m?\(([^)]+)\)/g);
             if (brackets) {
@@ -1421,7 +1404,7 @@
                             d_val = Math.max(0.1, parseInt(content[3].substring(1,3))/10);
                         }
 
-                       clips.push({ 
+                        clips.push({ 
                             id: Date.now() + i, 
                             start: s_val, 
                             bright: b_val, 
@@ -1461,7 +1444,7 @@
             const btn = document.getElementById('playBtn'); 
             if (btn) { btn.innerText = "STOP"; btn.classList.replace('bg-blue-600', 'bg-red-600'); } 
             
-           let patterns = (activeLayer === 'BG') ? bgPatterns : (activeLayer === 'FG' ? fgPatterns : spPatterns);
+            let patterns = (activeLayer === 'BG') ? bgPatterns : (activeLayer === 'FG' ? fgPatterns : spPatterns);
             patterns[selectedIdx].code = generateCodeStr();
             let prefix = (activeLayer === 'BG') ? 'SB' : (activeLayer === 'FG' ? 'SF' : 'SSP');
             let playPrefix = (activeLayer === 'BG') ? '5' : (activeLayer === 'FG' ? 'FG:5' : 'SP:5');
@@ -1481,6 +1464,7 @@
                 history.replaceState(null, null, window.location.pathname);
             }
         }
+
         function unsaveAndExit() {
             isPlaying = false;
             cancelAnimationFrame(playInterval);
@@ -1763,7 +1747,6 @@
             if(!c) { grid.innerHTML = ''; return; }
             const markers = [7,8,9,10, 18,19,20,21, 29,30,31,32, 37,38,39,40, 48,49,50,51, 59,60,61,62, 68,69,70];
             
-            // 🚀 ป้องกันอาการกระตุก: ถ้ามี 300 หลอดถูกสร้างไว้แล้ว ให้อัปเดตแค่ Class สี ไม่ต้องสร้างใหม่
             if (grid.children.length === 300) {
                 for(let i=1; i<=300; i++) {
                     let d = grid.children[i-1];
@@ -1771,10 +1754,9 @@
                     let isActive = c.target.includes('<'+i+'>') ? 'led-active' : 'bg-[#111] text-gray-400';
                     d.className = `text-[8px] h-6 border rounded flex items-center justify-center cursor-pointer ${isMarked} ${isActive}`;
                 }
-                return; // จบการทำงานตรงนี้เลย ไม่ต้องไปทำลายทิ้งด้านล่าง
+                return; 
             }
 
-            // จะทำงานมาถึงตรงนี้ เฉพาะตอนเปิดหน้า Edit ครั้งแรกเท่านั้น
             grid.innerHTML = '';
             for(let i=1; i<=300; i++) { 
                 const d = document.createElement('div'); d.innerText = i;
@@ -1783,12 +1765,11 @@
                 d.className = `text-[8px] h-6 border rounded flex items-center justify-center cursor-pointer ${isMarked} ${isActive}`;
                 
                 d.addEventListener('click', (e) => { 
-                    // ดึงค่า currentClip ล่าสุดเสมอ ป้องกันบั๊กจำค่าผิดเมื่อจิ้มหลอดไฟ
                     let currentClip = clips.find(x => x.id === selectedClipId);
                     if (!currentClip) return;
 
                     let targetStr = '<' + i + '>';
-                    let pair = currentClip.mirror ? (301 - i) : null; // อัปเดตเงาสะท้อนเป็น 300 หลอด
+                    let pair = currentClip.mirror ? (301 - i) : null; 
                     let pairStr = pair ? '<' + pair + '>' : '';
                     
                     if(currentClip.target.includes(targetStr)) { 
@@ -1813,9 +1794,7 @@
                 
                 let d = Math.max(1, Math.min(999, Math.round(c.duration*100))).toString().padStart(3,'0');
                 
-                // ของเดิม: code += `${m}(${s}${b},${c.target || 'a'},${c.color},${c.fx}${d}00)`; 
-// แก้เป็น:
-code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00)`;
+                code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00)`;
             });
             return code;
         }
@@ -1984,7 +1963,6 @@ code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00
                 else if (c.fx === 'p') f = Math.pow(Math.sin(Math.PI * p), 4);
                 else if (c.fx === 'd') f = Math.pow(1.0 - p, 4);
                 else if (c.fx === 'z') f = 1.0 - ((p * 4.0) % 1.0);
-                // 🟢 แทรกบรรทัดนี้ต่อท้ายลงไปครับ:
                 else if (c.fx === 'v') f = Math.sin(Math.PI * p);
                 let br = Math.max(0, Math.min(99, Math.round(c.bright * f)));
                 let bStr = br.toString().padStart(2, '0');
@@ -1994,9 +1972,7 @@ code += `${m}(${s}${b},${compressLEDs(c.target || 'a')},${c.color},${c.fx}${d}00
                 let idx = Math.floor(p / step);
                 if (idx >= colorCodes.length) idx = colorCodes.length - 1;
                 let showColor = colorCodes[idx] || colorCodes[0];
-                // ของเดิม: code += `${m}(000${bStr},${c.target || 'a'},${showColor},o99900)`; 
-// แก้เป็น:
-code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`; 
+                code += `${m}(000${bStr},${compressLEDs(c.target || 'a')},${showColor},o99900)`; 
             });
             throttledBleWrite('scrub', code, 'withoutResponse', 40);
         }
