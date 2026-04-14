@@ -73,21 +73,22 @@
             flex-direction: column;
             border-radius: 20px;
             padding: 10px;
-            position: relative;
-            background-color: rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .layer-bg { 
-            flex: 0 0 45%; 
+            .layer-bg { 
+            flex: 0 0 37%; 
             border: 2px solid #22c55e; 
             background-color: rgba(20, 83, 45, 0.2); 
         }
         
         .layer-fg { 
-            flex: 0 0 35%; 
+            flex: 0 0 25%; 
             border: 2px solid #3b82f6; 
             background-color: rgba(30, 58, 138, 0.2); 
+        }
+
+        .layer-sp { 
+            flex: 0 0 17%; 
+            border: 2px solid #ec4899; 
+            background-color: rgba(157, 23, 77, 0.2); 
         }
 
         .layer-title {
@@ -255,7 +256,30 @@
                 <button id="stopBtnFG" onclick="stopFG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP FG</button>
             </div>
         </div>
+<div class="layer-block layer-sp mt-1">
+            <h2 class="layer-title text-pink-500">SPECIAL FX LAYER</h2>
+            
+            <div class="flex space-x-2 mb-1 bg-gray-900/50 p-1.5 px-3 mx-1 rounded-xl flex-none mt-1">
+                <div class="flex-1 flex items-center space-x-2 w-full">
+                    <button onclick="resetSpeed('SP')" class="text-[9px] font-bold text-gray-400 bg-gray-800 px-2 py-1 rounded shadow active:bg-gray-600">SPD</button>
+                    <input type="range" id="spSpeedSlider" min="0" max="8" step="0.1" value="1.0" class="flex-1 accent-pink-500 h-1.5 bg-gray-700 rounded-lg appearance-none" oninput="updateSpeed(this.value, 'SP')">
+                    <span id="spSpeedText" class="text-pink-500 font-black text-[10px] w-8 text-right">1.0</span>
+                </div>
+            </div>
 
+            <div class="pad-container">
+                <div id="padGridSP" class="grid-style" style="grid-template-columns: repeat(7, 1fr);"></div>
+            </div>
+            
+            <div class="flex space-x-2 mt-1 flex-none w-full">
+                <div class="flex-1 flex items-center space-x-2 bg-gray-900/50 px-3 py-2 rounded-lg border border-gray-800">
+                    <span class="text-[9px] font-bold text-gray-400 w-6">BRT</span>
+                    <input type="range" id="spBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 accent-yellow-500 h-2 bg-gray-700 rounded-lg appearance-none" oninput="updateBright(this.value, 'SP')">
+                    <span id="spBrightText" class="text-yellow-500 font-black text-[10px] w-8 text-right">30%</span>
+                </div>
+                <button id="stopBtnSP" onclick="stopSP()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP SP</button>
+            </div>
+        </div>
     </div>
 
     <div id="modal" class="fixed inset-0 hidden z-40 flex flex-col bg-[#050505] pb-[40px]">
@@ -442,7 +466,7 @@
                         await new Promise(r => setTimeout(r, 100));
                         continue; 
                     } else {
-                        if (cmd.startsWith("SB") || cmd.startsWith("SF") || cmd.startsWith("OBG") || cmd.startsWith("OFG")) {
+                        if (cmd.startsWith("SB") || cmd.startsWith("SF") || cmd.startsWith("SSP") || cmd.startsWith("OBG") || cmd.startsWith("OFG") || cmd.startsWith("OSP")) {
                             alert("⚠️ บลูทูธไม่ตอบสนอง บันทึกข้อมูลไม่สำเร็จ กรุณากด SAVE อีกครั้งครับ");
                         }
                         if(reject) reject(e);
@@ -566,13 +590,15 @@
             }
         }
 
-        let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
+       let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         let fgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
+        let spPatterns = Array.from({length: 7}, (_, i) => ({ id: i, code: "" }));
         
         let clips = []; 
         let activeLayer = 'BG'; 
         let activeIdxBG = -1;
         let activeIdxFG = -1;
+        let activeIdxSP = -1;
         
         let selectedClipId = null; let selectedIdx = -1;
         let playheadTime = 0; let isPlaying = false;
@@ -582,6 +608,7 @@
         
         let sortableBG = null;
         let sortableFG = null;
+        let sortableSP = null;
         let isDraggingPad = false;
 
         let activeColorIndex = -1; 
@@ -937,9 +964,12 @@
         function updateSpeed(val, layer) {
             if(layer === 'BG') {
                 throttledBleWrite('speedBG', "T" + parseFloat(val).toFixed(1), 'withoutResponse', 50);
-            } else {
+            } else if (layer === 'FG') {
                 document.getElementById('fgSpeedText').innerText = parseFloat(val).toFixed(1);
                 throttledBleWrite('speedFG', "FGT" + parseFloat(val).toFixed(1), 'withoutResponse', 50);
+            } else if (layer === 'SP') {
+                document.getElementById('spSpeedText').innerText = parseFloat(val).toFixed(1);
+                throttledBleWrite('speedSP', "SPT" + parseFloat(val).toFixed(1), 'withoutResponse', 50);
             }
         }
         
@@ -947,17 +977,20 @@
             if(layer === 'BG') {
                 document.getElementById('bgBrightText').innerText = Math.round(val*100) + '%';
                 throttledBleWrite('brightBG', "B:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
-            } else {
+            } else if (layer === 'FG') {
                 document.getElementById('fgBrightText').innerText = Math.round(val*100) + '%';
                 throttledBleWrite('brightFG', "FGB:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
+            } else if (layer === 'SP') {
+                document.getElementById('spBrightText').innerText = Math.round(val*100) + '%';
+                throttledBleWrite('brightSP', "SPB:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
             }
         }
 
         function resetSpeed(layer) {
-            let slider = document.getElementById(layer === 'BG' ? 'liveSpeedSlider' : 'fgSpeedSlider');
+            let sliderId = layer === 'BG' ? 'liveSpeedSlider' : (layer === 'FG' ? 'fgSpeedSlider' : 'spSpeedSlider');
+            let slider = document.getElementById(sliderId);
             if(slider) { slider.value = 1.0; updateSpeed(1.0, layer); }
         }
-
         function loadPatternOrder() {
             let savedOrderBG = localStorage.getItem('padOrderBG');
             if (savedOrderBG) {
@@ -984,15 +1017,28 @@
                     fgPatterns = newPatterns;
                 }
             }
+        let savedOrderSP = localStorage.getItem('padOrderSP');
+            if (savedOrderSP) {
+                let orderArr = savedOrderSP.split(',').map(Number);
+                if (orderArr.length === 7) {
+                    let newPatterns = [];
+                    orderArr.forEach(id => {
+                        let p = spPatterns.find(x => x.id === id);
+                        if(p) newPatterns.push(p);
+                    });
+                    spPatterns = newPatterns;
+                }
+            }
         }
 
         function savePatternOrder(layer) {
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
             let orderStr = patterns.map(p => p.id).join(',');
-            localStorage.setItem(layer === 'BG' ? 'padOrderBG' : 'padOrderFG', orderStr);
+            let key = (layer === 'BG') ? 'padOrderBG' : (layer === 'FG' ? 'padOrderFG' : 'padOrderSP');
+            localStorage.setItem(key, orderStr);
             
             if(characteristic) {
-                let prefix = (layer === 'BG') ? "OBG:" : "OFG:";
+                let prefix = (layer === 'BG') ? "OBG:" : (layer === 'FG' ? "OFG:" : "OSP:");
                 safeBleWrite(prefix + orderStr, 'withResponse');
             }
         }
@@ -1039,6 +1085,10 @@
                     if (!isNaN(savedFG) && savedFG >= 0 && savedFG < 60 && fgPatterns[savedFG].code) {
                         playFX(savedFG, null, 'FG');
                     }
+                    let savedSP = parseInt(localStorage.getItem('lastActiveSP'));
+                    if (!isNaN(savedSP) && savedSP >= 0 && savedSP < 7 && spPatterns[savedSP].code) {
+                        playFX(savedSP, null, 'SP');
+                    }
                 }, 1500); 
 
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
@@ -1081,6 +1131,9 @@
                     } else if (val.startsWith("DF")) {
                         let p = val.substring(2).split(":");
                         if(p.length >= 3) { fgPatterns[parseInt(p[0])].code = p[2] || ""; updatePadsVisuals('FG'); }
+                    } else if (val.startsWith("DSP")) {
+                        let p = val.substring(3).split(":");
+                        if(p.length >= 3) { spPatterns[parseInt(p[0])].code = p[2] || ""; updatePadsVisuals('SP'); }
                     } else if (val.startsWith("OBG:")) {
                         let orderStr = val.substring(4);
                         if(orderStr) {
@@ -1095,8 +1148,14 @@
                             loadPatternOrder();
                             renderLayerPads('FG');
                         }
+                    } else if (val.startsWith("OSP:")) {
+                        let orderStr = val.substring(4);
+                        if(orderStr) {
+                            localStorage.setItem('padOrderSP', orderStr);
+                            loadPatternOrder();
+                            renderLayerPads('SP');
+                        }
                     }
-                });
                 await safeBleWrite("GET_ALL", 'withResponse');
             } catch (e) { alert("BT Error: " + e.message); }
         };
