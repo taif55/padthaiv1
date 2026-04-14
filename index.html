@@ -998,19 +998,32 @@
                     fgPatterns = newPatterns;
                 }
             }
-        }
-
-        function savePatternOrder(layer) {
-            let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
-            let orderStr = patterns.map(p => p.id).join(',');
-            localStorage.setItem(layer === 'BG' ? 'padOrderBG' : 'padOrderFG', orderStr);
-            
-            if(characteristic) {
-                let prefix = (layer === 'BG') ? "OBG:" : "OFG:";
-                safeBleWrite(prefix + orderStr, 'withResponse');
+        let savedOrderFL = localStorage.getItem('padOrderFL');
+            if (savedOrderFL) {
+                let orderArr = savedOrderFL.split(',').map(Number);
+                if (orderArr.length === 7) {
+                    let newPatterns = [];
+                    orderArr.forEach(id => {
+                        let p = flPatterns.find(x => x.id === id);
+                        if(p) newPatterns.push(p);
+                    });
+                    flPatterns = newPatterns;
+                }
             }
         }
 
+        function savePatternOrder(layer) {
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG') ? fgPatterns : flPatterns;
+            let orderStr = patterns.map(p => p.id).join(',');
+            
+            let storageKey = layer === 'BG' ? 'padOrderBG' : (layer === 'FG' ? 'padOrderFG' : 'padOrderFL');
+            localStorage.setItem(storageKey, orderStr);
+            
+            if(characteristic) {
+                let prefix = (layer === 'BG') ? "OBG:" : (layer === 'FG') ? "OFG:" : "OFL:";
+                safeBleWrite(prefix + orderStr, 'withResponse');
+            }
+        }
         function updatePowerBar(percent, raw = 0) {
             const fill = document.getElementById('powerBarFill');
             const text = document.getElementById('powerBarText');
@@ -1116,7 +1129,7 @@
         };
 
         function renderLayerPads(layer) {
-            const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridFL');
+           const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridFL');
             const grid = document.getElementById(gridId);
             
             if (!grid) {
@@ -1165,11 +1178,11 @@
             try {
                 if (typeof Sortable === 'undefined') return;
 
-                const gridId = layer === 'BG' ? 'padGridBG' : 'padGridFG';
+                const gridId = layer === 'BG' ? 'padGridBG' : (layer === 'FG' ? 'padGridFG' : 'padGridFL');
                 const grid = document.getElementById(gridId);
                 if (!grid) return;
 
-                let patterns = (layer === 'BG') ? bgPatterns : fgPatterns;
+                let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG') ? fgPatterns : flPatterns;
                 
                 const config = {
                     animation: 150, delay: 250, delayOnTouchOnly: false, touchStartThreshold: 5,
@@ -1228,7 +1241,9 @@
                 }
             });
 
-            const stopBtn = document.getElementById(layer === 'BG' ? 'stopBtnBG' : 'stopBtnFG');
+            let stopBtnId = layer === 'BG' ? 'stopBtnBG' : (layer === 'FG' ? 'stopBtnFG' : null);
+            const stopBtn = stopBtnId ? document.getElementById(stopBtnId) : null;
+            
             if (stopBtn) {
                 if (layer === 'BG') {
                     if (activeIdx !== -1) {
@@ -1407,15 +1422,15 @@
             const btn = document.getElementById('playBtn'); 
             if (btn) { btn.innerText = "STOP"; btn.classList.replace('bg-blue-600', 'bg-red-600'); } 
             
-            let patterns = (activeLayer === 'BG') ? bgPatterns : fgPatterns;
+           let patterns = (activeLayer === 'BG') ? bgPatterns : (activeLayer === 'FG') ? fgPatterns : flPatterns;
             patterns[selectedIdx].code = generateCodeStr();
-            let prefix = (activeLayer === 'BG') ? 'SB' : 'SF';
-            let playPrefix = (activeLayer === 'BG') ? '5' : 'FG:5';
+            let prefix = (activeLayer === 'BG') ? 'SB' : (activeLayer === 'FG') ? 'SF' : 'SFL';
+            let playPrefix = (activeLayer === 'BG') ? '5' : (activeLayer === 'FG') ? 'FG:5' : 'FL:5';
 
             if(characteristic) {
                 safeBleWrite(`${prefix}${selectedIdx}:${patterns[selectedIdx].code}`, 'withResponse');
                 
-                let activeLiveIdx = (activeLayer === 'BG') ? activeIdxBG : activeIdxFG;
+                let activeLiveIdx = (activeLayer === 'BG') ? activeIdxBG : (activeLayer === 'FG') ? activeIdxFG : activeIdxFL;
                 if (activeLiveIdx === selectedIdx) {
                     safeBleWrite(playPrefix + patterns[selectedIdx].code);
                 }
