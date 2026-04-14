@@ -265,9 +265,13 @@
         <div class="layer-block layer-sp mt-1">
             <h2 class="layer-title text-pink-500">SPECIAL FX LAYER</h2>
             
-            <div class="flex space-x-2 mb-1 bg-gray-900/50 p-1.5 px-3 mx-1 rounded-xl flex-none mt-1">
-                <div class="flex-1 flex items-center space-x-2 w-full">
-                    <button onclick="resetSpeed('SP')" class="text-[9px] font-bold text-gray-400 bg-gray-800 px-2 py-1 rounded shadow active:bg-gray-600">SPD</button>
+           <div class="pad-container mt-2">
+                <div id="padGridSP" class="grid-style" style="grid-template-columns: repeat(7, 1fr);"></div>
+            </div>
+            
+            <div class="flex space-x-2 mt-1 flex-none w-full">
+                <div class="flex-1 flex items-center space-x-2 bg-gray-900/50 px-3 py-2 rounded-lg border border-gray-800">
+                    <span class="text-[9px] font-bold text-gray-400 w-6">BRT</span>
                     <input type="range" id="spSpeedSlider" min="0" max="8" step="0.1" value="1.0" class="flex-1 accent-pink-500 h-1.5 bg-gray-700 rounded-lg appearance-none" oninput="updateSpeed(this.value, 'SP')">
                     <span id="spSpeedText" class="text-pink-500 font-black text-[10px] w-8 text-right">1.0</span>
                 </div>
