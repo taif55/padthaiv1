@@ -68,12 +68,17 @@
             text-shadow: 1px 1px 2px black;
         }
 
-        .layer-block {
+       .layer-block {
             display: flex;
             flex-direction: column;
             border-radius: 20px;
             padding: 10px;
-            .layer-bg { 
+            position: relative;
+            background-color: rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .layer-bg { 
             flex: 0 0 37%; 
             border: 2px solid #22c55e; 
             background-color: rgba(20, 83, 45, 0.2); 
