@@ -306,7 +306,7 @@
                     </div>
                     
                     <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 min-h-0">
-                        <div id="padGridSP" class="grid-style" style="grid-template-columns: repeat(7, 1fr);"></div>
+                        <div id="padGridSP" class="grid-style"></div>
                     </div>
                 </div>
             </div>
@@ -606,9 +606,9 @@
             }
         }
 
-        let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
+       let bgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         let fgPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
-        let spPatterns = Array.from({length: 7}, (_, i) => ({ id: i, code: "" }));
+        let spPatterns = Array.from({length: 60}, (_, i) => ({ id: i, code: "" }));
         
         let clips = []; 
         let activeLayer = 'BG'; 
@@ -1181,7 +1181,7 @@ let sclDragBaseVal = 3;
             let savedOrderSP = localStorage.getItem('padOrderSP');
             if (savedOrderSP) {
                 let orderArr = savedOrderSP.split(',').map(Number);
-                if (orderArr.length === 7) {
+                if (orderArr.length === 60) {
                     let newPatterns = [];
                     orderArr.forEach(id => {
                         let p = spPatterns.find(x => x.id === id);
