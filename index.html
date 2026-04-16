@@ -78,24 +78,23 @@
             overflow: hidden;
         }
         
-        .layer-bg { 
-            flex: 0 0 37%; 
+       .layer-bg { 
+            flex: 1; min-h-0;
             border: 2px solid #22c55e; 
             background-color: rgba(20, 83, 45, 0.2); 
         }
         
         .layer-fg { 
-            flex: 0 0 25%; 
+            flex: 1; min-h-0;
             border: 2px solid #3b82f6; 
             background-color: rgba(30, 58, 138, 0.2); 
         }
 
         .layer-sp { 
-            flex: 0 0 17%; 
+            flex: 1; min-h-0;
             border: 2px solid #ec4899; 
             background-color: rgba(157, 23, 77, 0.2); 
         }
-
         .layer-title {
             position: absolute;
             top: -10px;
@@ -234,7 +233,7 @@
                                onchange="dropSCL(this.value)">
                     </div>
                     
-                    <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 h-[80px]">
+                    <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 min-h-0">
                         <div id="padGridBG" class="grid-style"></div>
                     </div>
                 </div>
