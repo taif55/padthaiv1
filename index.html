@@ -162,6 +162,8 @@
             animation: bpmSyncBlink var(--beat-duration, 0.5s) infinite;
             position: relative;
         }
+        .sync-blink-fg { animation: bpmSyncBlink var(--beat-duration, 0.5s) infinite; position: relative; }
+        .sync-blink-sp { animation: bpmSyncBlink var(--beat-duration, 0.5s) infinite; position: relative; }
 
         /* NEW: อนิเมชั่นกระพริบชี้เป้าเวลาก้อนไฟเกิดใหม่ (Add Clip) */
         @keyframes newClipFlash {
@@ -238,48 +240,77 @@
                 </div>
             </div>
             </div>
-        <div class="layer-block layer-fg mt-1">
+       <div class="layer-block layer-fg mt-1">
             <h2 class="layer-title text-blue-500">FOREGROUND LAYER</h2>
             
-            <div class="flex space-x-2 mb-1 bg-gray-900/50 p-1.5 px-3 mx-1 rounded-xl flex-none mt-1">
-                <div class="flex-1 flex items-center space-x-2 w-full">
-                    <button onclick="resetSpeed('FG')" class="text-[9px] font-bold text-gray-400 bg-gray-800 px-2 py-1 rounded shadow active:bg-gray-600">SPD</button>
-                    <input type="range" id="fgSpeedSlider" min="0" max="8" step="0.1" value="1.0" class="flex-1 accent-orange-500 h-1.5 bg-gray-700 rounded-lg appearance-none" oninput="updateSpeed(this.value, 'FG')">
-                    <span id="fgSpeedText" class="text-orange-500 font-black text-[10px] w-8 text-right">1.0</span>
-                </div>
+            <div class="grid grid-cols-8 gap-1 px-1 mt-3 mb-1 flex-none">
+                <button id="stopBtnFG" onclick="stopFG()" class="bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition">STOP</button>
+                <button onclick="setRoomFromBtnFG(this, 8, 0)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
+                <button onclick="setRoomFromBtnFG(this, 6, 1)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
+                <button onclick="setRoomFromBtnFG(this, 4, 2)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">4</button>
+                <button onclick="setRoomFromBtnFG(this, 2, 3)" class="room-btn-fg bg-blue-700 text-white py-1 rounded-lg border border-blue-500 text-[11px] font-black active:bg-blue-600 transition shadow-[0_0_8px_rgba(59,130,246,0.6)] sync-blink-fg">2</button>
+                <button onclick="setRoomFromBtnFG(this, 1, 4)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1</button>
+                <button onclick="setRoomFromBtnFG(this, 0.5, 5)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/2</button>
+                <button onclick="setRoomFromBtnFG(this, 0.25, 6)" class="room-btn-fg bg-gray-800 text-blue-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/4</button>
             </div>
 
-            <div class="pad-container">
-                <div id="padGridFG" class="grid-style"></div>
-            </div>
-            
-            <div class="flex space-x-2 mt-1 flex-none w-full">
-                <div class="flex-1 flex items-center space-x-2 bg-gray-900/50 px-3 py-2 rounded-lg border border-gray-800">
-                    <span class="text-[9px] font-bold text-gray-400 w-6">BRT</span>
-                    <input type="range" id="fgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 accent-yellow-500 h-2 bg-gray-700 rounded-lg appearance-none" oninput="updateBright(this.value, 'FG')">
-                    <span id="fgBrightText" class="text-yellow-500 font-black text-[10px] w-8 text-right">30%</span>
+            <div class="grid grid-cols-8 gap-1 px-1 flex-1 min-h-0 pb-1">
+                <div class="col-span-1 flex flex-col items-center bg-gray-900/50 py-1.5 rounded-xl border border-gray-800 shadow-inner min-h-0 h-full">
+                    <span class="text-[7px] text-gray-400 font-bold mb-1 flex-none">BRT</span>
+                    <input type="range" orient="vertical" id="fgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 w-2 min-h-0 accent-yellow-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" oninput="updateBright(this.value, 'FG')">
                 </div>
-                <button id="stopBtnFG" onclick="stopFG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP FG</button>
+
+                <div class="col-span-7 flex flex-col min-w-0 gap-1 min-h-0 h-full">
+                    <div class="flex items-center bg-gray-900/50 px-2 py-1.5 rounded-lg border border-gray-700 shadow-inner flex-none">
+                        <input type="range" id="liveSpeedSliderFG" min="0" max="6" step="0.01" value="3"
+                               class="flex-1 accent-blue-500 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" 
+                               onpointerdown="startDragSCLFG()" 
+                               oninput="dragSCLFG(this.value)" 
+                               onchange="dropSCLFG(this.value)">
+                    </div>
+                    
+                    <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 min-h-0">
+                        <div id="padGridFG" class="grid-style"></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-    <div class="layer-block layer-sp mt-1">
+        <div class="layer-block layer-sp mt-1">
             <h2 class="layer-title text-pink-500">SPECIAL FX LAYER</h2>
             
-            <div class="pad-container mt-2">
-                <div id="padGridSP" class="grid-style" style="grid-template-columns: repeat(7, 1fr);"></div>
+            <div class="grid grid-cols-8 gap-1 px-1 mt-3 mb-1 flex-none">
+                <button id="stopBtnSP" onclick="stopSP()" class="bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition">STOP</button>
+                <button onclick="setRoomFromBtnSP(this, 8, 0)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
+                <button onclick="setRoomFromBtnSP(this, 6, 1)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
+                <button onclick="setRoomFromBtnSP(this, 4, 2)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">4</button>
+                <button onclick="setRoomFromBtnSP(this, 2, 3)" class="room-btn-sp bg-pink-700 text-white py-1 rounded-lg border border-pink-500 text-[11px] font-black active:bg-pink-600 transition shadow-[0_0_8px_rgba(236,72,153,0.6)] sync-blink-sp">2</button>
+                <button onclick="setRoomFromBtnSP(this, 1, 4)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1</button>
+                <button onclick="setRoomFromBtnSP(this, 0.5, 5)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/2</button>
+                <button onclick="setRoomFromBtnSP(this, 0.25, 6)" class="room-btn-sp bg-gray-800 text-pink-400 py-1 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/4</button>
             </div>
-            
-            <div class="flex space-x-2 mt-1 flex-none w-full">
-                <div class="flex-1 flex items-center space-x-2 bg-gray-900/50 px-3 py-2 rounded-lg border border-gray-800">
-                    <span class="text-[9px] font-bold text-gray-400 w-6">BRT</span>
-                    <input type="range" id="spBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 accent-yellow-500 h-2 bg-gray-700 rounded-lg appearance-none" oninput="updateBright(this.value, 'SP')">
-                    <span id="spBrightText" class="text-yellow-500 font-black text-[10px] w-8 text-right">30%</span>
+
+            <div class="grid grid-cols-8 gap-1 px-1 flex-1 min-h-0 pb-1">
+                <div class="col-span-1 flex flex-col items-center bg-gray-900/50 py-1.5 rounded-xl border border-gray-800 shadow-inner min-h-0 h-full">
+                    <span class="text-[7px] text-gray-400 font-bold mb-1 flex-none">BRT</span>
+                    <input type="range" orient="vertical" id="spBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 w-2 min-h-0 accent-yellow-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" oninput="updateBright(this.value, 'SP')">
                 </div>
-                <button id="stopBtnSP" onclick="stopSP()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP SP</button>
+
+                <div class="col-span-7 flex flex-col min-w-0 gap-1 min-h-0 h-full">
+                    <div class="flex items-center bg-gray-900/50 px-2 py-1.5 rounded-lg border border-gray-700 shadow-inner flex-none">
+                        <input type="range" id="liveSpeedSliderSP" min="0" max="6" step="0.01" value="3"
+                               class="flex-1 accent-pink-500 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" 
+                               onpointerdown="startDragSCLSP()" 
+                               oninput="dragSCLSP(this.value)" 
+                               onchange="dropSCLSP(this.value)">
+                    </div>
+                    
+                    <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 min-h-0">
+                        <div id="padGridSP" class="grid-style" style="grid-template-columns: repeat(7, 1fr);"></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
     <div id="modal" class="fixed inset-0 hidden z-40 flex flex-col bg-[#050505] pb-[40px]">
         <div class="flex justify-between items-center p-2 bg-gray-900 border-b border-gray-800 flex-none">
@@ -950,7 +981,99 @@ let sclDragBaseVal = 3;
             if (v <= 5) return 1 - (v - 4) * 0.5;
             return 0.5 - (v - 5) * 0.25;
         }
+// ---- ชุดควบคุมของ FOREGROUND (FG) ----
+        let sclDragBaseValFG = 3;
 
+        function setRoomFromBtnFG(btn, beats, sliderValue) {
+            document.getElementById('liveSpeedSliderFG').value = sliderValue;
+            sclDragBaseValFG = sliderValue;
+            
+            let scaleText = btn.innerText.trim();
+            const activeClasses = ['bg-blue-700', 'text-white', 'border-blue-500', 'font-black', 'active:bg-blue-600', 'shadow-[0_0_8px_rgba(59,130,246,0.6)]', 'sync-blink-fg'];
+            const inactiveClasses = ['bg-gray-800', 'text-blue-400', 'border-gray-600', 'font-bold', 'active:bg-gray-700'];
+
+            document.querySelectorAll('.room-btn-fg').forEach(el => {
+                if (el.innerText.trim() === scaleText) {
+                    el.classList.remove(...inactiveClasses); el.classList.add(...activeClasses);
+                } else {
+                    el.classList.remove(...activeClasses); el.classList.add(...inactiveClasses);
+                }
+            });
+            
+            remoteEditAction(() => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
+            throttledBleWrite('speedFG', "FGT1.00", 'withoutResponse', 50);
+        }
+
+        function startDragSCLFG() { sclDragBaseValFG = parseFloat(document.getElementById('liveSpeedSliderFG').value); }
+        function dragSCLFG(val) {
+            let baseBeats = getBeatsFromSlider(sclDragBaseValFG);
+            let targetBeats = getBeatsFromSlider(parseFloat(val));
+            let ratio = Math.max(0.1, Math.min(10.0, baseBeats / targetBeats));
+            throttledBleWrite('speedFG', "FGT" + ratio.toFixed(2), 'withoutResponse', 50);
+        }
+        function dropSCLFG(val) {
+            let v = parseFloat(val);
+            let closestIdx = Math.round(v);
+            if (Math.abs(v - closestIdx) < 0.05) {
+                document.getElementById('liveSpeedSliderFG').value = closestIdx;
+                sclDragBaseValFG = closestIdx;
+                let btns = document.querySelectorAll('.room-btn-fg');
+                if(btns[closestIdx]) btns[closestIdx].click();
+            } else {
+                document.querySelectorAll('.sync-blink-fg').forEach(el => el.classList.remove('sync-blink-fg'));
+                sclDragBaseValFG = v;
+                let targetBeats = getBeatsFromSlider(v);
+                remoteEditAction(() => setRoomScale(targetBeats));
+                throttledBleWrite('speedFG', "FGT1.00", 'withoutResponse', 50);
+            }
+        }
+
+        // ---- ชุดควบคุมของ SPECIAL FX (SP) ----
+        let sclDragBaseValSP = 3;
+
+        function setRoomFromBtnSP(btn, beats, sliderValue) {
+            document.getElementById('liveSpeedSliderSP').value = sliderValue;
+            sclDragBaseValSP = sliderValue;
+            
+            let scaleText = btn.innerText.trim();
+            const activeClasses = ['bg-pink-700', 'text-white', 'border-pink-500', 'font-black', 'active:bg-pink-600', 'shadow-[0_0_8px_rgba(236,72,153,0.6)]', 'sync-blink-sp'];
+            const inactiveClasses = ['bg-gray-800', 'text-pink-400', 'border-gray-600', 'font-bold', 'active:bg-gray-700'];
+
+            document.querySelectorAll('.room-btn-sp').forEach(el => {
+                if (el.innerText.trim() === scaleText) {
+                    el.classList.remove(...inactiveClasses); el.classList.add(...activeClasses);
+                } else {
+                    el.classList.remove(...activeClasses); el.classList.add(...inactiveClasses);
+                }
+            });
+            
+            remoteEditAction(() => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
+            throttledBleWrite('speedSP', "SPT1.00", 'withoutResponse', 50);
+        }
+
+        function startDragSCLSP() { sclDragBaseValSP = parseFloat(document.getElementById('liveSpeedSliderSP').value); }
+        function dragSCLSP(val) {
+            let baseBeats = getBeatsFromSlider(sclDragBaseValSP);
+            let targetBeats = getBeatsFromSlider(parseFloat(val));
+            let ratio = Math.max(0.1, Math.min(10.0, baseBeats / targetBeats));
+            throttledBleWrite('speedSP', "SPT" + ratio.toFixed(2), 'withoutResponse', 50);
+        }
+        function dropSCLSP(val) {
+            let v = parseFloat(val);
+            let closestIdx = Math.round(v);
+            if (Math.abs(v - closestIdx) < 0.05) {
+                document.getElementById('liveSpeedSliderSP').value = closestIdx;
+                sclDragBaseValSP = closestIdx;
+                let btns = document.querySelectorAll('.room-btn-sp');
+                if(btns[closestIdx]) btns[closestIdx].click();
+            } else {
+                document.querySelectorAll('.sync-blink-sp').forEach(el => el.classList.remove('sync-blink-sp'));
+                sclDragBaseValSP = v;
+                let targetBeats = getBeatsFromSlider(v);
+                remoteEditAction(() => setRoomScale(targetBeats));
+                throttledBleWrite('speedSP', "SPT1.00", 'withoutResponse', 50);
+            }
+        }
         function setRoomFromBtn(btn, beats, sliderValue) {
             document.getElementById('liveSpeedSlider').value = sliderValue;
             sclDragBaseVal = sliderValue;
