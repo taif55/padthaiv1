@@ -510,7 +510,7 @@
             document.documentElement.style.setProperty('--beat-duration', dur + 's');
         }
 
-        function setActiveScaleBtn(btn) {
+       function setActiveScaleBtn(btn) {
             if (!btn) return;
             let scaleText = btn.innerText.trim();
             
@@ -519,6 +519,9 @@
 
             document.querySelectorAll('.room-btn, button[onclick*="setActiveScaleBtn"]').forEach(el => {
                 if (el.innerText.trim() === scaleText) {
+                    el.classList.remove(...inactiveClasses);
+                    el.classList.add(...activeClasses);
+                } else {
                     el.classList.remove(...activeClasses);
                     el.classList.add(...inactiveClasses);
                 }
