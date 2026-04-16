@@ -179,18 +179,24 @@
 <body>
     <div id="mainView">
         
-        <div class="header-section mt-1 mb-1">
+        <div class="header-section mt-1 mb-1 !flex-none !py-2">
             <h1 class="text-sm font-black text-white italic uppercase tracking-wider">Pocket DJ <span class="text-orange-500">PADTHAI</span></h1>
             
-            <div class="flex items-center space-x-3">
-                <div class="flex flex-col items-center">
-                    <span id="powerLabel" class="text-[7px] text-gray-400 font-bold mb-[1px]">POWER</span>
-                    <div class="power-bar-container">
-                        <div id="powerBarFill" class="power-bar-fill"></div>
-                        <div id="powerBarText" class="power-text">OFF</div>
+            <div class="flex flex-col items-end gap-1.5">
+                <div class="flex items-center space-x-3">
+                    <div class="flex flex-col items-center">
+                        <span id="powerLabel" class="text-[7px] text-gray-400 font-bold mb-[1px]">POWER</span>
+                        <div class="power-bar-container">
+                            <div id="powerBarFill" class="power-bar-fill"></div>
+                            <div id="powerBarText" class="power-text">OFF</div>
+                        </div>
                     </div>
+                    <button id="connectBtn" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition">CONNECT</button>
                 </div>
-                <button id="connectBtn" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition">CONNECT</button>
+                <div class="flex items-center space-x-2">
+                    <span id="liveBpmDisplay" class="text-[14px] text-orange-400 font-black px-3 py-1 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer shrink-0 text-center shadow-inner">128</span>
+                    <button id="bgTapBtn" onpointerdown="remoteTapTempo(event)" class="bg-orange-600 hover:bg-orange-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black shadow-[0_0_8px_rgba(234,88,12,0.4)] active:scale-95 transition flex items-center justify-center shrink-0">TAP</button>
+                </div>
             </div>
         </div>
         
@@ -224,13 +230,7 @@
                     <span class="text-[7px] font-bold text-gray-400">BRT</span>
                     <input type="range" id="bgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 accent-yellow-500 h-1.5 bg-gray-700 rounded-lg appearance-none" oninput="updateBright(this.value, 'BG')">
                 </div>
-
-                <span id="liveBpmDisplay" class="text-[20px] text-orange-400 font-black px-2 py-1.5 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer shrink-0 text-center">128</span>
-                
-                <button id="bgTapBtn" onpointerdown="remoteTapTempo(event)" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-3 rounded-lg text-[11px] font-black shadow-[0_0_10px_rgba(234,88,12,0.4)] active:scale-95 transition flex items-center justify-center shrink-0">
-                    TAP
-                </button>
-            </div>
+</div>
 
             <div class="pad-container mt-1">
                 <div id="padGridBG" class="grid-style"></div>
