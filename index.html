@@ -678,17 +678,19 @@
         const colorMap = { 'bl': '#0000FF', 're': '#FF0000', 'gr': '#00FF00', 'ye': '#FFFF00', 'wh': '#FFFFFF', 'pu': '#8000FF', 'aq': '#00FFFF', 'or': '#FF8000', 'pk': '#FF00FF', 'cy': '#00FFFF' };
         const fxNames = { o: 'STATIC', u: 'FADE UP', f: 'FADE OUT', s: 'STROBE', b: 'BLINK', w: 'WAVE', r: 'RANDOM', p: 'PULSE', d: 'DROP', z: 'ZIGZAG', h: 'H-STROBE', v: 'MT. FUJI' };
 
-        function remoteEditAction(actionCallback) {
-            if (activeIdxBG === -1) return; 
+       function remoteEditAction(layer, actionCallback) {
+            let activeLiveIdx = (layer === 'BG') ? activeIdxBG : (layer === 'FG' ? activeIdxFG : activeIdxSP);
+            if (activeLiveIdx === -1) return; 
             
             let prevLayer = activeLayer;
             let prevIdx = selectedIdx;
 
-            activeLayer = 'BG';
-            selectedIdx = activeIdxBG;
+            activeLayer = layer;
+            selectedIdx = activeLiveIdx;
             clips = [];
             
-            let rawCode = bgPatterns[activeIdxBG].code || "";
+            let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
+            let rawCode = patterns[activeLiveIdx].code || "";
             let brackets = rawCode.match(/m?\(([^)]+)\)/g);
             if (brackets) {
                 brackets.forEach((bracket, i) => {
@@ -728,20 +730,20 @@
             actionCallback();
             
             let newCode = generateCodeStr();
-            bgPatterns[activeIdxBG].code = newCode;
-            updatePadsVisuals('BG');
+            patterns[activeLiveIdx].code = newCode;
+            updatePadsVisuals(layer);
             
             if(characteristic) {
-                safeBleWrite(`SB${activeIdxBG}:${newCode}`, 'withResponse');
-                safeBleWrite("T1.00");
-                safeBleWrite("5" + newCode);
+                let prefix = (layer === 'BG') ? 'SB' : (layer === 'FG' ? 'SF' : 'SSP');
+                let playCmd = (layer === 'BG') ? '5' : (layer === 'FG' ? 'FG:5' : 'SP:5');
+                safeBleWrite(`${prefix}${activeLiveIdx}:${newCode}`, 'withResponse');
+                safeBleWrite(playCmd + newCode);
             }
 
             activeLayer = prevLayer;
             selectedIdx = prevIdx;
             clips = []; 
         }
-
         function remoteTapTempo(e) {
             if(e) e.preventDefault();
             const now = Date.now();
@@ -775,10 +777,10 @@
                             setTimeout(() => { safeBleWrite("B:" + currentBrt.toFixed(2)); }, 150);
                         }
 
-                        remoteEditAction(() => {
+                        remoteEditAction('BG', () => {
                             snapLoopToGrid();
                         });
-                    }, delayToSync); 
+                    }, delayToSync);
                 }
             }
             const btn = document.getElementById('bgTapBtn');
@@ -1001,7 +1003,7 @@ let sclDragBaseVal = 3;
                 }
             });
             
-            remoteEditAction(() => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
+            remoteEditAction('FG', () => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
             throttledBleWrite('speedFG', "FGT1.00", 'withoutResponse', 50);
         }
 
@@ -1024,7 +1026,7 @@ let sclDragBaseVal = 3;
                 document.querySelectorAll('.sync-blink-fg').forEach(el => el.classList.remove('sync-blink-fg'));
                 sclDragBaseValFG = v;
                 let targetBeats = getBeatsFromSlider(v);
-                remoteEditAction(() => setRoomScale(targetBeats));
+                remoteEditAction('FG', () => setRoomScale(targetBeats));
                 throttledBleWrite('speedFG', "FGT1.00", 'withoutResponse', 50);
             }
         }
@@ -1048,7 +1050,7 @@ let sclDragBaseVal = 3;
                 }
             });
             
-            remoteEditAction(() => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
+           remoteEditAction('SP', () => setRoomScale(beats)); // ส่งค่าไปคำนวณสเกล (จำลอง)
             throttledBleWrite('speedSP', "SPT1.00", 'withoutResponse', 50);
         }
 
@@ -1071,7 +1073,7 @@ let sclDragBaseVal = 3;
                 document.querySelectorAll('.sync-blink-sp').forEach(el => el.classList.remove('sync-blink-sp'));
                 sclDragBaseValSP = v;
                 let targetBeats = getBeatsFromSlider(v);
-                remoteEditAction(() => setRoomScale(targetBeats));
+              remoteEditAction('SP', () => setRoomScale(targetBeats));
                 throttledBleWrite('speedSP', "SPT1.00", 'withoutResponse', 50);
             }
         }
@@ -1079,7 +1081,7 @@ let sclDragBaseVal = 3;
             document.getElementById('liveSpeedSlider').value = sliderValue;
             sclDragBaseVal = sliderValue;
             setActiveScaleBtn(btn);
-            remoteEditAction(() => setRoomScale(beats));
+            remoteEditAction('BG', () => setRoomScale(beats));
             throttledBleWrite('speedBG', "T1.00", 'withoutResponse', 50);
         }
 
@@ -1100,7 +1102,7 @@ let sclDragBaseVal = 3;
             let targetBeats = getBeatsFromSlider(v);
             
             sclDragBaseVal = v;
-            remoteEditAction(() => setRoomScale(targetBeats));
+            remoteEditAction('BG', () => setRoomScale(targetBeats));
             throttledBleWrite('speedBG', "T1.00", 'withoutResponse', 50);
             
             let closestIdx = Math.round(v);
@@ -2178,7 +2180,7 @@ let sclDragBaseVal = 3;
                             document.getElementById('editorBpmDisplay').innerText = editorBPM;
                             document.getElementById('liveBpmDisplay').innerText = editorBPM;
                             updateBeatDuration(); 
-                            remoteEditAction(() => { snapLoopToGrid(); });
+                            remoteEditAction('BG', () => { snapLoopToGrid(); });
                         } else {
                             alert("กรุณาใส่ตัวเลขระหว่าง 30 - 200");
                         }
