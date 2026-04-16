@@ -1153,44 +1153,29 @@ let sclDragBaseVal = 3;
         }
 
         function loadPatternOrder() {
-            let savedOrderBG = localStorage.getItem('padOrderBG');
-            if (savedOrderBG) {
-                let orderArr = savedOrderBG.split(',').map(Number);
-                if (orderArr.length === 60) {
-                    let newPatterns = [];
-                    orderArr.forEach(id => {
-                        let p = bgPatterns.find(x => x.id === id);
-                        if(p) newPatterns.push(p);
-                    });
-                    bgPatterns = newPatterns;
+            function loadForLayer(key, patternsArray) {
+                let savedOrder = localStorage.getItem(key);
+                if (savedOrder) {
+                    let orderArr = savedOrder.split(',').map(Number);
+                    if (orderArr.length > 0) {
+                        let newPatterns = [];
+                        orderArr.forEach(id => {
+                            let p = patternsArray.find(x => x.id === id);
+                            if(p) newPatterns.push(p);
+                        });
+                        // เติมปุ่มที่อาจตกหล่นไป (กรณีมีการเปลี่ยนจำนวนปุ่ม)
+                        patternsArray.forEach(p => {
+                            if(!newPatterns.includes(p)) newPatterns.push(p);
+                        });
+                        return newPatterns;
+                    }
                 }
+                return patternsArray;
             }
 
-            let savedOrderFG = localStorage.getItem('padOrderFG');
-            if (savedOrderFG) {
-                let orderArr = savedOrderFG.split(',').map(Number);
-                if (orderArr.length === 60) {
-                    let newPatterns = [];
-                    orderArr.forEach(id => {
-                        let p = fgPatterns.find(x => x.id === id);
-                        if(p) newPatterns.push(p);
-                    });
-                    fgPatterns = newPatterns;
-                }
-            }
-            
-            let savedOrderSP = localStorage.getItem('padOrderSP');
-            if (savedOrderSP) {
-                let orderArr = savedOrderSP.split(',').map(Number);
-                if (orderArr.length === 60) {
-                    let newPatterns = [];
-                    orderArr.forEach(id => {
-                        let p = spPatterns.find(x => x.id === id);
-                        if(p) newPatterns.push(p);
-                    });
-                    spPatterns = newPatterns;
-                }
-            }
+            bgPatterns = loadForLayer('padOrderBG', bgPatterns);
+            fgPatterns = loadForLayer('padOrderFG', fgPatterns);
+            spPatterns = loadForLayer('padOrderSP', spPatterns);
         }
 
         function savePatternOrder(layer) {
