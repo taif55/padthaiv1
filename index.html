@@ -208,7 +208,8 @@
         <div class="layer-block layer-bg mt-1">
             <h2 class="layer-title text-green-500">BACKGROUND LAYER</h2>
             
-            <div class="flex items-center justify-between w-full space-x-1 px-1 mt-3 mb-1">
+           <div class="flex items-center justify-between w-full space-x-1 px-1 mt-3 mb-1">
+                <button id="stopBtnBG" onclick="stopBG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(8))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(6))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(4))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">4</button>
@@ -219,8 +220,6 @@
             </div>
 
             <div class="flex gap-1.5 mb-1 bg-gray-900/50 p-1.5 mx-1 rounded-xl flex-none items-center">
-                <button id="stopBtnBG" onclick="stopBG()" class="bg-red-900/80 hover:bg-red-600 text-white font-black text-[9px] px-3 py-2 rounded-lg shadow-lg transition h-full">STOP</button>
-                
                 <div class="flex items-center space-x-1 bg-black/50 px-2 py-1.5 rounded-lg border border-gray-700 shrink-0">
                     <span class="text-[7px] text-gray-400 font-bold">SCL</span>
                     <input type="range" id="liveSpeedSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-[30px] accent-orange-500 h-1.5 bg-gray-700 rounded-lg appearance-none" onchange="remoteEditAction(() => applySpeedScale(this.value))">
@@ -1259,19 +1258,11 @@
             });
 
             const stopBtn = document.getElementById(layer === 'BG' ? 'stopBtnBG' : (layer === 'FG' ? 'stopBtnFG' : 'stopBtnSP'));
-            if (stopBtn) {
-                if (layer === 'BG') {
-                    if (activeIdx !== -1) {
-                        stopBtn.className = "bg-green-600 hover:bg-green-500 text-white font-black text-[9px] px-3 py-2 rounded-lg shadow-lg transition h-full whitespace-nowrap";
-                    } else {
-                        stopBtn.className = "bg-red-900/80 hover:bg-red-600 text-white font-black text-[9px] px-3 py-2 rounded-lg shadow-lg transition h-full whitespace-nowrap";
-                    }
+           if (stopBtn) {
+                if (activeIdx !== -1) {
+                    stopBtn.className = "flex-1 bg-green-600 hover:bg-green-500 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
                 } else {
-                    if (activeIdx !== -1) {
-                        stopBtn.className = "flex-1 bg-green-600 hover:bg-green-500 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
-                    } else {
-                        stopBtn.className = "flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
-                    }
+                    stopBtn.className = "flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
                 }
             }
         }
