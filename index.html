@@ -208,35 +208,38 @@
         <div class="layer-block layer-bg mt-1">
             <h2 class="layer-title text-green-500">BACKGROUND LAYER</h2>
             
-          <div class="flex items-center justify-between w-full space-x-1 px-1 mt-3 mb-1 flex-none">
-                <button id="stopBtnBG" onclick="stopBG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(8))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(6))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(4))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">4</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(2))" class="flex-1 bg-green-700 text-white py-2 rounded-lg border border-green-500 text-[11px] font-black active:bg-green-600 transition shadow-[0_0_8px_rgba(34,197,94,0.6)]">2</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(1))" class="flex-1 bg-green-700 text-white py-2 rounded-lg border border-green-500 text-[11px] font-black active:bg-green-600 transition shadow-[0_0_8px_rgba(34,197,94,0.6)]">1</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(0.5))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/2</button>
-                <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(0.25))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/4</button>
+         <div class="grid grid-cols-8 gap-1 px-1 mt-3 mb-1 flex-none">
+                <button id="stopBtnBG" onclick="stopBG()" class="bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP</button>
+                <button onclick="setRoomFromBtn(this, 8, 0)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
+                <button onclick="setRoomFromBtn(this, 6, 1)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
+                <button onclick="setRoomFromBtn(this, 4, 2)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">4</button>
+                <button onclick="setRoomFromBtn(this, 2, 3)" class="room-btn bg-green-700 text-white py-2 rounded-lg border border-green-500 text-[11px] font-black active:bg-green-600 transition shadow-[0_0_8px_rgba(34,197,94,0.6)] sync-blink">2</button>
+                <button onclick="setRoomFromBtn(this, 1, 4)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1</button>
+                <button onclick="setRoomFromBtn(this, 0.5, 5)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/2</button>
+                <button onclick="setRoomFromBtn(this, 0.25, 6)" class="room-btn bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/4</button>
             </div>
 
-            <div class="flex flex-1 min-h-0 gap-2 px-1 pb-1 mt-1">
-                <div class="flex space-x-3 bg-gray-900/50 p-2 py-3 rounded-xl flex-none border border-gray-800 shadow-inner">
-                    <div class="flex flex-col items-center justify-between h-full w-4">
-                        <span class="text-[7px] text-gray-400 font-bold mb-2">BRT</span>
-                        <input type="range" orient="vertical" id="bgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 w-2 accent-yellow-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" oninput="updateBright(this.value, 'BG')">
-                    </div>
-                    <div class="flex flex-col items-center justify-between h-full w-4">
-                        <span class="text-[7px] text-gray-400 font-bold mb-2">SCL</span>
-                        <input type="range" orient="vertical" id="liveSpeedSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="flex-1 w-2 accent-orange-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" onchange="remoteEditAction(() => applySpeedScale(this.value))">
-                    </div>
+            <div class="grid grid-cols-8 gap-1 px-1 flex-1 min-h-0 pb-1">
+                <div class="col-span-1 flex flex-col items-center bg-gray-900/50 py-2 rounded-xl flex-none border border-gray-800 shadow-inner">
+                    <span class="text-[7px] text-gray-400 font-bold mb-2">BRT</span>
+                    <input type="range" orient="vertical" id="bgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 w-2 accent-yellow-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" oninput="updateBright(this.value, 'BG')">
                 </div>
 
-                <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto">
-                    <div id="padGridBG" class="grid-style"></div>
+                <div class="col-span-7 flex flex-col min-w-0 gap-1">
+                    <div class="flex items-center bg-gray-900/50 px-2 py-1.5 rounded-lg border border-gray-700 shadow-inner flex-none">
+                        <span class="text-[7px] text-gray-400 font-bold mr-2 w-4">SCL</span>
+                        <input type="range" id="liveSpeedSlider" min="0" max="6" step="0.01" value="3" 
+                               class="flex-1 accent-orange-500 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" 
+                               onpointerdown="startDragSCL()" 
+                               oninput="dragSCL(this.value)" 
+                               onchange="dropSCL(this.value)">
+                    </div>
+                    
+                    <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto flex-1 h-[80px]">
+                        <div id="padGridBG" class="grid-style"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-
         <div class="layer-block layer-fg mt-1">
             <h2 class="layer-title text-blue-500">FOREGROUND LAYER</h2>
             
@@ -515,11 +518,8 @@
             const activeClasses = ['bg-green-700', 'text-white', 'border-green-500', 'font-black', 'active:bg-green-600', 'shadow-[0_0_8px_rgba(34,197,94,0.6)]', 'sync-blink'];
             const inactiveClasses = ['bg-gray-800', 'text-green-400', 'border-gray-600', 'font-bold', 'active:bg-gray-700'];
 
-            document.querySelectorAll('button[onclick*="setActiveScaleBtn"]').forEach(el => {
+            document.querySelectorAll('.room-btn, button[onclick*="setActiveScaleBtn"]').forEach(el => {
                 if (el.innerText.trim() === scaleText) {
-                    el.classList.remove(...inactiveClasses);
-                    el.classList.add(...activeClasses);
-                } else {
                     el.classList.remove(...activeClasses);
                     el.classList.add(...inactiveClasses);
                 }
@@ -939,6 +939,55 @@
             handleBack(); 
             alert("แปลงโค้ดกลับเป็นลายไฟสำเร็จ!");
         }
+let sclDragBaseVal = 3;
+
+        function getBeatsFromSlider(v) {
+            if (v <= 1) return 8 - v * 2;
+            if (v <= 2) return 6 - (v - 1) * 2;
+            if (v <= 3) return 4 - (v - 2) * 2;
+            if (v <= 4) return 2 - (v - 3) * 1;
+            if (v <= 5) return 1 - (v - 4) * 0.5;
+            return 0.5 - (v - 5) * 0.25;
+        }
+
+        function setRoomFromBtn(btn, beats, sliderValue) {
+            document.getElementById('liveSpeedSlider').value = sliderValue;
+            sclDragBaseVal = sliderValue;
+            setActiveScaleBtn(btn);
+            remoteEditAction(() => setRoomScale(beats));
+            throttledBleWrite('speedBG', "T1.00", 'withoutResponse', 50);
+        }
+
+        function startDragSCL() {
+            sclDragBaseVal = parseFloat(document.getElementById('liveSpeedSlider').value);
+        }
+
+        function dragSCL(val) {
+            let baseBeats = getBeatsFromSlider(sclDragBaseVal);
+            let targetBeats = getBeatsFromSlider(parseFloat(val));
+            let ratio = baseBeats / targetBeats; 
+            ratio = Math.max(0.1, Math.min(10.0, ratio)); // คุมความเร็วไม่ให้ฮาร์ดแวร์เอ๋อ
+            throttledBleWrite('speedBG', "T" + ratio.toFixed(2), 'withoutResponse', 50);
+        }
+
+        function dropSCL(val) {
+            let v = parseFloat(val);
+            let targetBeats = getBeatsFromSlider(v);
+            
+            sclDragBaseVal = v;
+            remoteEditAction(() => setRoomScale(targetBeats));
+            throttledBleWrite('speedBG', "T1.00", 'withoutResponse', 50);
+            
+            let closestIdx = Math.round(v);
+            if (Math.abs(v - closestIdx) < 0.05) {
+                document.getElementById('liveSpeedSlider').value = closestIdx;
+                sclDragBaseVal = closestIdx;
+                let btns = document.querySelectorAll('.room-btn');
+                if(btns[closestIdx]) setActiveScaleBtn(btns[closestIdx]);
+            } else {
+                clearActiveScaleBtns();
+            }
+        }
 
         function updateSpeed(val, layer) {
             if(layer === 'BG') {
@@ -1295,18 +1344,11 @@
 
                 if(!characteristic || !patterns[idx].code) return;
                 
-                if (activeScale) {
-                    let scaleText = activeScale.innerText.trim();
-                    let beats = 1;
-                    if (scaleText === '1/2') beats = 0.5;
-                    else if (scaleText === '1/4') beats = 0.25;
-                    else beats = parseFloat(scaleText);
-                    
-                    remoteEditAction(() => setRoomScale(beats));
-                } else {
-                    safeBleWrite("T1.00");
-                    safeBleWrite("5" + patterns[idx].code);
-                }
+                let currentScl = parseFloat(document.getElementById('liveSpeedSlider').value);
+                let targetBeats = getBeatsFromSlider(currentScl);
+                
+                remoteEditAction(() => setRoomScale(targetBeats));
+                safeBleWrite("T1.00");
             } else if (layer === 'FG') {
                 activeIdxFG = idx;
                 localStorage.setItem('lastActiveFG', idx); 
@@ -1525,8 +1567,6 @@
             if (!document.getElementById('modal').classList.contains('hidden')) {
                 let slider = document.getElementById('speedSlider');
                 if (slider) slider.value = 1.0;
-                let liveSlider = document.getElementById('liveSpeedSlider');
-                if (liveSlider) liveSlider.value = 1.0;
                 markUnsaved(); renderClips(); updateCodeMonitor();
                 fitToScreen(); 
                 restartPlayhead(); 
