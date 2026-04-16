@@ -208,7 +208,7 @@
         <div class="layer-block layer-bg mt-1">
             <h2 class="layer-title text-green-500">BACKGROUND LAYER</h2>
             
-           <div class="flex items-center justify-between w-full space-x-1 px-1 mt-3 mb-1">
+          <div class="flex items-center justify-between w-full space-x-1 px-1 mt-3 mb-1 flex-none">
                 <button id="stopBtnBG" onclick="stopBG()" class="flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition">STOP</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(8))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">8</button>
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(6))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">6</button>
@@ -219,20 +219,21 @@
                 <button onclick="setActiveScaleBtn(event.currentTarget); remoteEditAction(() => setRoomScale(0.25))" class="flex-1 bg-gray-800 text-green-400 py-2 rounded-lg border border-gray-600 text-[11px] font-bold active:bg-gray-700 transition">1/4</button>
             </div>
 
-            <div class="flex gap-1.5 mb-1 bg-gray-900/50 p-1.5 mx-1 rounded-xl flex-none items-center">
-                <div class="flex items-center space-x-1 bg-black/50 px-2 py-1.5 rounded-lg border border-gray-700 shrink-0">
-                    <span class="text-[7px] text-gray-400 font-bold">SCL</span>
-                    <input type="range" id="liveSpeedSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="w-[30px] accent-orange-500 h-1.5 bg-gray-700 rounded-lg appearance-none" onchange="remoteEditAction(() => applySpeedScale(this.value))">
+            <div class="flex flex-1 min-h-0 gap-2 px-1 pb-1 mt-1">
+                <div class="flex space-x-3 bg-gray-900/50 p-2 py-3 rounded-xl flex-none border border-gray-800 shadow-inner">
+                    <div class="flex flex-col items-center justify-between h-full w-4">
+                        <span class="text-[7px] text-gray-400 font-bold mb-2">BRT</span>
+                        <input type="range" orient="vertical" id="bgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 w-2 accent-yellow-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" oninput="updateBright(this.value, 'BG')">
+                    </div>
+                    <div class="flex flex-col items-center justify-between h-full w-4">
+                        <span class="text-[7px] text-gray-400 font-bold mb-2">SCL</span>
+                        <input type="range" orient="vertical" id="liveSpeedSlider" min="0.5" max="2.0" step="0.1" value="1.0" class="flex-1 w-2 accent-orange-500 bg-gray-700 rounded-lg cursor-pointer" style="-webkit-appearance: slider-vertical; appearance: slider-vertical;" onchange="remoteEditAction(() => applySpeedScale(this.value))">
+                    </div>
                 </div>
 
-                <div class="flex-1 flex items-center space-x-1 bg-black/50 px-2 py-1.5 rounded-lg border border-gray-700 min-w-0">
-                    <span class="text-[7px] font-bold text-gray-400">BRT</span>
-                    <input type="range" id="bgBrightSlider" min="0" max="0.30" step="0.01" value="0.30" class="flex-1 accent-yellow-500 h-1.5 bg-gray-700 rounded-lg appearance-none" oninput="updateBright(this.value, 'BG')">
+                <div class="pad-container !mb-0 !mt-0 !p-0 pr-1 overflow-y-auto">
+                    <div id="padGridBG" class="grid-style"></div>
                 </div>
-</div>
-
-            <div class="pad-container mt-1">
-                <div id="padGridBG" class="grid-style"></div>
             </div>
         </div>
 
