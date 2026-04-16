@@ -1003,15 +1003,22 @@ let sclDragBaseVal = 3;
         }
         
         function updateBright(val, layer) {
+            let brtNum = parseFloat(val);
+            // ล็อคค่าความสว่างต่ำสุดไว้ที่ 1% (0.01) ไม่ให้ลงไปถึง 0 ไฟจะได้แค่หรี่สุดๆ แต่ไม่ดับ
+            if (brtNum <= 0.01) brtNum = 0.01; 
+            
+            let brtStr = brtNum.toFixed(2);
+            let displayPercent = Math.round(brtNum * 100) + '%';
+
             if(layer === 'BG') {
-                document.getElementById('bgBrightText').innerText = Math.round(val*100) + '%';
-                throttledBleWrite('brightBG', "B:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
+                if(document.getElementById('bgBrightText')) document.getElementById('bgBrightText').innerText = displayPercent;
+                throttledBleWrite('brightBG', "B:" + brtStr, 'withoutResponse', 50);
             } else if (layer === 'FG') {
-                document.getElementById('fgBrightText').innerText = Math.round(val*100) + '%';
-                throttledBleWrite('brightFG', "FGB:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
+                if(document.getElementById('fgBrightText')) document.getElementById('fgBrightText').innerText = displayPercent;
+                throttledBleWrite('brightFG', "FGB:" + brtStr, 'withoutResponse', 50);
             } else if (layer === 'SP') {
-                document.getElementById('spBrightText').innerText = Math.round(val*100) + '%';
-                throttledBleWrite('brightSP', "SPB:" + parseFloat(val).toFixed(2), 'withoutResponse', 50);
+                if(document.getElementById('spBrightText')) document.getElementById('spBrightText').innerText = displayPercent;
+                throttledBleWrite('brightSP', "SPB:" + brtStr, 'withoutResponse', 50);
             }
         }
 
