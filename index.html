@@ -1440,22 +1440,13 @@ let sclDragBaseVal = 3;
 
            const stopBtn = document.getElementById(layer === 'BG' ? 'stopBtnBG' : (layer === 'FG' ? 'stopBtnFG' : 'stopBtnSP'));
            if (stopBtn) {
-                if (layer === 'BG') {
-                    if (activeIdx !== -1) {
-                        stopBtn.className = "bg-green-600 hover:bg-green-500 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition";
-                    } else {
-                        stopBtn.className = "bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition";
-                    }
+                if (activeIdx !== -1) {
+                    stopBtn.className = "bg-green-600 hover:bg-green-500 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition";
                 } else {
-                    if (activeIdx !== -1) {
-                        stopBtn.className = "flex-1 bg-green-600 hover:bg-green-500 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
-                    } else {
-                        stopBtn.className = "flex-1 bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-2 rounded-lg shadow-lg transition";
-                    }
+                    stopBtn.className = "bg-red-900/80 hover:bg-red-600 text-white font-black text-[10px] py-1 rounded-lg shadow-lg transition";
                 }
             }
         }
-
         function playFX(idx, btnElement, layer) {
             clearActiveScaleBtns();
             const parentBlock = layer === 'BG' ? document.querySelector('.layer-bg') : (layer === 'FG' ? document.querySelector('.layer-fg') : document.querySelector('.layer-sp'));
