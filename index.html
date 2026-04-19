@@ -1257,7 +1257,8 @@ let sclDragBaseVal = 3;
 
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
                     let val = new TextDecoder().decode(e.target.value);
-                    
+
+                
                     if (val.startsWith("PWR:")) {
                         let parts = val.substring(4).split(':');
                         let percent = parseInt(parts[0]);
