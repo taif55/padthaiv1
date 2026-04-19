@@ -194,10 +194,11 @@
                     </div>
                     <button id="connectBtn" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition">CONNECT</button>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span id="liveBpmDisplay" class="text-[14px] text-orange-400 font-black px-3 py-1 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer shrink-0 text-center shadow-inner">128</span>
-                    <button id="bgTapBtn" onpointerdown="remoteTapTempo(event)" class="bg-orange-600 hover:bg-orange-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black shadow-[0_0_8px_rgba(234,88,12,0.4)] active:scale-95 transition flex items-center justify-center shrink-0">TAP</button>
-                </div>
+               <div class="flex items-center space-x-2 w-full">
+                            <button id="endSongBtn" onclick="triggerEndSong()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow-[0_0_8px_rgba(147,51,234,0.4)] active:scale-95 transition flex items-center justify-center shrink-0 mr-auto tracking-widest">END</button>
+                            <span id="liveBpmDisplay" class="text-[14px] text-orange-400 font-black px-3 py-1 rounded-lg border border-gray-700 bg-gray-800 cursor-pointer shrink-0 text-center shadow-inner">128</span>
+                            <button id="bgTapBtn" onpointerdown="remoteTapTempo(event)" class="bg-orange-600 hover:bg-orange-500 text-white px-4 py-1.5 rounded-lg text-[10px] font-black shadow-[0_0_8px_rgba(234,88,12,0.4)] active:scale-95 transition flex items-center justify-center shrink-0">TAP</button>
+                        </div>
             </div>
         </div>
         
@@ -743,6 +744,20 @@
             activeLayer = prevLayer;
             selectedIdx = prevIdx;
             clips = []; 
+        }
+        function triggerEndSong() {
+            if (characteristic) {
+                safeBleWrite("SLOWSTOP", 'withoutResponse');
+                const btn = document.getElementById('endSongBtn');
+                btn.style.transform = 'scale(0.90)';
+                btn.style.backgroundColor = 'white';
+                btn.style.color = '#9333ea';
+                setTimeout(() => { 
+                    btn.style.transform = 'none'; 
+                    btn.style.backgroundColor = '#9333ea'; 
+                    btn.style.color = 'white'; 
+                }, 100);
+            }
         }
         function remoteTapTempo(e) {
             if(e) e.preventDefault();
