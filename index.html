@@ -424,6 +424,8 @@
         let isBleWriting = false;
         let bleThrottleTimers = {};
 
+        let bleRxBuffer = ""; // --- เพิ่มตัวแปรตะกร้าพักข้อมูล Bluetooth ---
+
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let lastLowVoltAlertTime = 0; 
         let isLowVoltageAlertLocked = false; 
@@ -516,10 +518,11 @@
             }, delay);
         }
 
-        function onDisconnected() { 
+       function onDisconnected() { 
             characteristic = null; 
             isBleWriting = false; 
             bleQueue = []; 
+            bleRxBuffer = ""; // --- เคลียร์ข้อมูลเก่าค้างท่อทิ้ง ---
             
             const btn = document.getElementById('connectBtn'); 
             btn.innerText = "CONNECT"; 
@@ -1256,13 +1259,23 @@ let sclDragBaseVal = 3;
                 }, 6500); 
 
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
-                   let rawVal = new TextDecoder().decode(e.target.value);
+                    // 1. รับข้อความท่อนใหม่เข้ามา
+                    let chunk = new TextDecoder().decode(e.target.value);
                     
-                    // ป้องกันบั๊กข้อมูลบลูทูธติดกันเป็นก้อน (Merged Packets) - แก้ไข Regex ให้รองรับเลขปุ่ม 0-59
-                   let commands = rawVal.match(/(PWR:|DB\d+:|DF\d+:|DSP\d+:|OBG:|OFG:|OSP:)[^]*?(?=(PWR:|DB\d+:|DF\d+:|DSP\d+:|OBG:|OFG:|OSP:|$))/g);
-                   if (!commands) commands = [rawVal];
+                    // 2. เอาไปต่อท้ายตะกร้าพักข้อมูล
+                    bleRxBuffer += chunk;
+                    
+                    // 3. หั่นข้อความด้วยสัญลักษณ์บรรทัดใหม่ (\n)
+                    let lines = bleRxBuffer.split('\n');
+                    
+                    // 4. ท่อนสุดท้ายที่ยังไม่มี \n ปิดท้าย แปลว่ายังมาไม่ครบ ให้เก็บไว้ในตะกร้าก่อน
+                    bleRxBuffer = lines.pop();
 
-                    commands.forEach(val => {
+                    // 5. เอาข้อความที่มาครบสมบูรณ์แล้วไปทำงาน
+                    lines.forEach(val => {
+                        val = val.trim();
+                        if (!val) return;
+
                         if (val.startsWith("PWR:")) {
                             let parts = val.substring(4).split(':');
                             let percent = parseInt(parts[0]);
