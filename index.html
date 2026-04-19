@@ -1242,18 +1242,18 @@ let sclDragBaseVal = 3;
 
                 setTimeout(() => {
                     let savedBG = parseInt(localStorage.getItem('lastActiveBG'));
-                    if (!isNaN(savedBG) && savedBG >= 0 && savedBG < 60 && bgPatterns[savedBG].code) {
+                    if (!isNaN(savedBG) && savedBG >= 0 && savedBG < 60 && bgPatterns[savedBG] && bgPatterns[savedBG].code) {
                         playFX(savedBG, null, 'BG');
                     }
                     let savedFG = parseInt(localStorage.getItem('lastActiveFG'));
-                    if (!isNaN(savedFG) && savedFG >= 0 && savedFG < 60 && fgPatterns[savedFG].code) {
+                    if (!isNaN(savedFG) && savedFG >= 0 && savedFG < 60 && fgPatterns[savedFG] && fgPatterns[savedFG].code) {
                         playFX(savedFG, null, 'FG');
                     }
                     let savedSP = parseInt(localStorage.getItem('lastActiveSP'));
-                    if (!isNaN(savedSP) && savedSP >= 0 && savedSP < 7 && spPatterns[savedSP].code) {
+                    if (!isNaN(savedSP) && savedSP >= 0 && savedSP < 60 && spPatterns[savedSP] && spPatterns[savedSP].code) {
                         playFX(savedSP, null, 'SP');
                     }
-                }, 1500); 
+                }, 6500); 
 
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
                     let val = new TextDecoder().decode(e.target.value);
@@ -1291,13 +1291,13 @@ let sclDragBaseVal = 3;
                     }
                     else if (val.startsWith("DB")) {
                         let p = val.substring(2).split(":");
-                        if(p.length >= 3) { bgPatterns[parseInt(p[0])].code = p[2] || ""; updatePadsVisuals('BG'); }
+                        if(p.length >= 3) { let pat = bgPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('BG'); } }
                     } else if (val.startsWith("DF")) {
                         let p = val.substring(2).split(":");
-                        if(p.length >= 3) { fgPatterns[parseInt(p[0])].code = p[2] || ""; updatePadsVisuals('FG'); }
+                        if(p.length >= 3) { let pat = fgPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('FG'); } }
                     } else if (val.startsWith("DSP")) {
                         let p = val.substring(3).split(":");
-                        if(p.length >= 3) { spPatterns[parseInt(p[0])].code = p[2] || ""; updatePadsVisuals('SP'); }
+                        if(p.length >= 3) { let pat = spPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('SP'); } }
                     } else if (val.startsWith("OBG:")) {
                         let orderStr = val.substring(4);
                         if(orderStr) {
