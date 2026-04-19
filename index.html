@@ -1480,7 +1480,7 @@ let sclDragBaseVal = 3;
                 let currentScl = parseFloat(document.getElementById('liveSpeedSlider').value);
                 let targetBeats = getBeatsFromSlider(currentScl);
                 
-                remoteEditAction(() => setRoomScale(targetBeats));
+                remoteEditAction('BG', () => setRoomScale(targetBeats));
                 safeBleWrite("T1.00");
             } else if (layer === 'FG') {
                 activeIdxFG = idx;
