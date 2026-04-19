@@ -1258,9 +1258,9 @@ let sclDragBaseVal = 3;
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
                    let rawVal = new TextDecoder().decode(e.target.value);
                     
-                    // ป้องกันบั๊กข้อมูลบลูทูธติดกันเป็นก้อน (Merged Packets)
-                    let commands = rawVal.match(/(PWR:|DB|DF|DSP|OBG:|OFG:|OSP:)[^]*?(?=(PWR:|DB|DF|DSP|OBG:|OFG:|OSP:|$))/g);
-                    if (!commands) commands = [rawVal];
+                    // ป้องกันบั๊กข้อมูลบลูทูธติดกันเป็นก้อน (Merged Packets) - แก้ไข Regex ให้รองรับเลขปุ่ม 0-59
+                   let commands = rawVal.match(/(PWR:|DB\d+:|DF\d+:|DSP\d+:|OBG:|OFG:|OSP:)[^]*?(?=(PWR:|DB\d+:|DF\d+:|DSP\d+:|OBG:|OFG:|OSP:|$))/g);
+                   if (!commands) commands = [rawVal];
 
                     commands.forEach(val => {
                         if (val.startsWith("PWR:")) {
