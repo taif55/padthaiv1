@@ -1243,22 +1243,7 @@ let sclDragBaseVal = 3;
                 
                 updatePowerBar(100);
 
-                setTimeout(() => {
-                    let savedBG = parseInt(localStorage.getItem('lastActiveBG'));
-                    if (!isNaN(savedBG) && savedBG >= 0 && savedBG < 60 && bgPatterns[savedBG] && bgPatterns[savedBG].code) {
-                        playFX(savedBG, null, 'BG');
-                    }
-                    let savedFG = parseInt(localStorage.getItem('lastActiveFG'));
-                    if (!isNaN(savedFG) && savedFG >= 0 && savedFG < 60 && fgPatterns[savedFG] && fgPatterns[savedFG].code) {
-                        playFX(savedFG, null, 'FG');
-                    }
-                    let savedSP = parseInt(localStorage.getItem('lastActiveSP'));
-                    if (!isNaN(savedSP) && savedSP >= 0 && savedSP < 60 && spPatterns[savedSP] && spPatterns[savedSP].code) {
-                        playFX(savedSP, null, 'SP');
-                    }
-                }, 6500); 
-
-             characteristic.addEventListener('characteristicvaluechanged', (e) => {
+               characteristic.addEventListener('characteristicvaluechanged', (e) => {
                     let chunk = new TextDecoder().decode(e.target.value);
                     bleRxBuffer += chunk;
                     let lines = bleRxBuffer.split('\n');
@@ -1267,8 +1252,23 @@ let sclDragBaseVal = 3;
                     lines.forEach(val => {
                         val = val.trim();
                         if (!val) return;
-
-                        if (val.startsWith("PWR:")) {
+                        
+if (val === "DONE_ALL") {
+                            // --- พอบอร์ดบอกว่าจบแล้ว ค่อยดึงความจำเก่ามาเล่น ---
+                            let savedBG = parseInt(localStorage.getItem('lastActiveBG'));
+                            if (!isNaN(savedBG) && savedBG >= 0 && savedBG < 60 && bgPatterns[savedBG] && bgPatterns[savedBG].code) {
+                                playFX(savedBG, null, 'BG');
+                            }
+                            let savedFG = parseInt(localStorage.getItem('lastActiveFG'));
+                            if (!isNaN(savedFG) && savedFG >= 0 && savedFG < 60 && fgPatterns[savedFG] && fgPatterns[savedFG].code) {
+                                playFX(savedFG, null, 'FG');
+                            }
+                            let savedSP = parseInt(localStorage.getItem('lastActiveSP'));
+                            if (!isNaN(savedSP) && savedSP >= 0 && savedSP < 60 && spPatterns[savedSP] && spPatterns[savedSP].code) {
+                                playFX(savedSP, null, 'SP');
+                            }
+                        }
+                        else if (val.startsWith("PWR:")) {
                             let parts = val.substring(4).split(':');
                             let percent = parseInt(parts[0]);
                             let raw = parts.length > 1 ? parseInt(parts[1]) : 0;
