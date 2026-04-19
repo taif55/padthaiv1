@@ -1256,71 +1256,99 @@ let sclDragBaseVal = 3;
                 }, 6500); 
 
                 characteristic.addEventListener('characteristicvaluechanged', (e) => {
-                    let val = new TextDecoder().decode(e.target.value);
+                   let rawVal = new TextDecoder().decode(e.target.value);
+                    
+                    // ป้องกันบั๊กข้อมูลบลูทูธติดกันเป็นก้อน (Merged Packets)
+                    let commands = rawVal.match(/(PWR:|DB|DF|DSP|OBG:|OFG:|OSP:)[^]*?(?=(PWR:|DB|DF|DSP|OBG:|OFG:|OSP:|$))/g);
+                    if (!commands) commands = [rawVal];
 
-                
-                    if (val.startsWith("PWR:")) {
-                        let parts = val.substring(4).split(':');
-                        let percent = parseInt(parts[0]);
-                        let raw = parts.length > 1 ? parseInt(parts[1]) : 0;
-                        updatePowerBar(percent, raw);
+                    commands.forEach(val => {
+                        if (val.startsWith("PWR:")) {
+                            let parts = val.substring(4).split(':');
+                            let percent = parseInt(parts[0]);
+                            let raw = parts.length > 1 ? parseInt(parts[1]) : 0;
+                            updatePowerBar(percent, raw);
 
-                        const warningBox = document.getElementById('voltageWarning');
-                        const warningText = document.getElementById('voltageText');
-                        
-                        if (warningBox && warningText && raw > 0) {
-                            if (!isLowVoltageAlertLocked && raw <= 3400) {
-                                isLowVoltageAlertLocked = true;
-                            } else if (isLowVoltageAlertLocked && raw >= 3800) {
-                                isLowVoltageAlertLocked = false;
-                            }
-
-                            if (isLowVoltageAlertLocked) {
-                                warningBox.classList.remove('hidden'); 
-                                warningText.innerText = `RAW: ${raw} (LOW POWER)`;
-                                
-                                let nowMs = Date.now();
-                                if (nowMs - lastLowVoltAlertTime > 5000) {
-                                    lastLowVoltAlertTime = nowMs;
-                                    playAlertBeep(); 
-                                    if (navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+                            const warningBox = document.getElementById('voltageWarning');
+                            const warningText = document.getElementById('voltageText');
+                            
+                            if (warningBox && warningText && raw > 0) {
+                                if (!isLowVoltageAlertLocked && raw <= 3400) {
+                                    isLowVoltageAlertLocked = true;
+                                } else if (isLowVoltageAlertLocked && raw >= 3800) {
+                                    isLowVoltageAlertLocked = false;
                                 }
-                            } else {
-                                warningBox.classList.add('hidden'); 
+
+                                if (isLowVoltageAlertLocked) {
+                                    warningBox.classList.remove('hidden'); 
+                                    warningText.innerText = `RAW: ${raw} (LOW POWER)`;
+                                    
+                                    let nowMs = Date.now();
+                                    if (nowMs - lastLowVoltAlertTime > 5000) {
+                                        lastLowVoltAlertTime = nowMs;
+                                        playAlertBeep(); 
+                                        if (navigator.vibrate) navigator.vibrate([200, 100, 200]); 
+                                    }
+                                } else {
+                                    warningBox.classList.add('hidden'); 
+                                }
                             }
                         }
-                    }
-                    else if (val.startsWith("DB")) {
-                        let p = val.substring(2).split(":");
-                        if(p.length >= 3) { let pat = bgPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('BG'); } }
-                    } else if (val.startsWith("DF")) {
-                        let p = val.substring(2).split(":");
-                        if(p.length >= 3) { let pat = fgPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('FG'); } }
-                    } else if (val.startsWith("DSP")) {
-                        let p = val.substring(3).split(":");
-                        if(p.length >= 3) { let pat = spPatterns.find(x => x.id === parseInt(p[0])); if(pat) { pat.code = p[2] || ""; updatePadsVisuals('SP'); } }
-                    } else if (val.startsWith("OBG:")) {
-                        let orderStr = val.substring(4);
-                        if(orderStr) {
-                            localStorage.setItem('padOrderBG', orderStr);
-                            loadPatternOrder();
-                            renderLayerPads('BG');
+                        else if (val.startsWith("DB")) {
+                            let sep1 = val.indexOf(':', 2);
+                            let sep2 = val.indexOf(':', sep1 + 1);
+                            if (sep1 !== -1 && sep2 !== -1) {
+                                let id = parseInt(val.substring(2, sep1));
+                                let code = val.substring(sep2 + 1);
+                                let pat = bgPatterns.find(x => x.id === id);
+                                if(pat) { pat.code = code; updatePadsVisuals('BG'); }
+                            }
+                        } 
+                        else if (val.startsWith("DF")) {
+                            let sep1 = val.indexOf(':', 2);
+                            let sep2 = val.indexOf(':', sep1 + 1);
+                            if (sep1 !== -1 && sep2 !== -1) {
+                                let id = parseInt(val.substring(2, sep1));
+                                let code = val.substring(sep2 + 1);
+                                let pat = fgPatterns.find(x => x.id === id);
+                                if(pat) { pat.code = code; updatePadsVisuals('FG'); }
+                            }
+                        } 
+                        else if (val.startsWith("DSP")) {
+                            let sep1 = val.indexOf(':', 3);
+                            let sep2 = val.indexOf(':', sep1 + 1);
+                            if (sep1 !== -1 && sep2 !== -1) {
+                                let id = parseInt(val.substring(3, sep1));
+                                let code = val.substring(sep2 + 1);
+                                let pat = spPatterns.find(x => x.id === id);
+                                if(pat) { pat.code = code; updatePadsVisuals('SP'); }
+                            }
+                        } 
+                        else if (val.startsWith("OBG:")) {
+                            let orderStr = val.substring(4);
+                            if(orderStr) {
+                                localStorage.setItem('padOrderBG', orderStr);
+                                loadPatternOrder();
+                                renderLayerPads('BG');
+                            }
+                        } 
+                        else if (val.startsWith("OFG:")) {
+                            let orderStr = val.substring(4);
+                            if(orderStr) {
+                                localStorage.setItem('padOrderFG', orderStr);
+                                loadPatternOrder();
+                                renderLayerPads('FG');
+                            }
+                        } 
+                        else if (val.startsWith("OSP:")) {
+                            let orderStr = val.substring(4);
+                            if(orderStr) {
+                                localStorage.setItem('padOrderSP', orderStr);
+                                loadPatternOrder();
+                                renderLayerPads('SP');
+                            }
                         }
-                    } else if (val.startsWith("OFG:")) {
-                        let orderStr = val.substring(4);
-                        if(orderStr) {
-                            localStorage.setItem('padOrderFG', orderStr);
-                            loadPatternOrder();
-                            renderLayerPads('FG');
-                        }
-                    } else if (val.startsWith("OSP:")) {
-                        let orderStr = val.substring(4);
-                        if(orderStr) {
-                            localStorage.setItem('padOrderSP', orderStr);
-                            loadPatternOrder();
-                            renderLayerPads('SP');
-                        }
-                    }
+                    });
                 });
                 await safeBleWrite("GET_ALL", 'withResponse');
             } catch (e) { alert("BT Error: " + e.message); }
