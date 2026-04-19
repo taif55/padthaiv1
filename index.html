@@ -1258,20 +1258,12 @@ let sclDragBaseVal = 3;
                     }
                 }, 6500); 
 
-                characteristic.addEventListener('characteristicvaluechanged', (e) => {
-                    // 1. รับข้อความท่อนใหม่เข้ามา
+             characteristic.addEventListener('characteristicvaluechanged', (e) => {
                     let chunk = new TextDecoder().decode(e.target.value);
-                    
-                    // 2. เอาไปต่อท้ายตะกร้าพักข้อมูล
                     bleRxBuffer += chunk;
-                    
-                    // 3. หั่นข้อความด้วยสัญลักษณ์บรรทัดใหม่ (\n)
                     let lines = bleRxBuffer.split('\n');
-                    
-                    // 4. ท่อนสุดท้ายที่ยังไม่มี \n ปิดท้าย แปลว่ายังมาไม่ครบ ให้เก็บไว้ในตะกร้าก่อน
-                    bleRxBuffer = lines.pop();
+                    bleRxBuffer = lines.pop(); // เก็บส่วนที่ยังไม่จบไว้รอรอบหน้า
 
-                    // 5. เอาข้อความที่มาครบสมบูรณ์แล้วไปทำงาน
                     lines.forEach(val => {
                         val = val.trim();
                         if (!val) return;
