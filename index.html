@@ -746,9 +746,10 @@
             updatePadsVisuals(layer);
             
             if(characteristic) {
+                let physicalId = patterns[activeLiveIdx].id; // บังคับใช้ ID จริงของปุ่ม เพื่อให้เซฟลงตรงช่อง
                 let prefix = (layer === 'BG') ? 'SB' : (layer === 'FG' ? 'SF' : 'SSP');
                 let playCmd = (layer === 'BG') ? '5' : (layer === 'FG' ? 'FG:5' : 'SP:5');
-                safeBleWrite(`${prefix}${activeLiveIdx}:${newCode}`, 'withResponse');
+                safeBleWrite(`${prefix}${physicalId}:${newCode}`, 'withResponse');
                 safeBleWrite(playCmd + newCode);
             }
 
@@ -1651,14 +1652,14 @@ if (val === "DONE_ALL") {
             let playPrefix = (activeLayer === 'BG') ? '5' : (activeLayer === 'FG' ? 'FG:5' : 'SP:5');
 
             if(characteristic) {
-                safeBleWrite(`${prefix}${selectedIdx}:${patterns[selectedIdx].code}`, 'withResponse');
+                let physicalId = patterns[selectedIdx].id; // บังคับใช้ ID จริงของปุ่ม
+                safeBleWrite(`${prefix}${physicalId}:${patterns[selectedIdx].code}`, 'withResponse');
                 
                 let activeLiveIdx = (activeLayer === 'BG') ? activeIdxBG : (activeLayer === 'FG' ? activeIdxFG : activeIdxSP);
                 if (activeLiveIdx === selectedIdx) {
                     safeBleWrite(playPrefix + patterns[selectedIdx].code);
                 }
             }
-
             updatePadsVisuals(activeLayer);
             document.getElementById('modal').classList.add('hidden');
             if (window.location.hash === '#edit') {
