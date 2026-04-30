@@ -469,14 +469,22 @@
                 }
 
                 try {
-                    const writePromise = type === 'withResponse' 
-                       ? characteristic.writeValue(new TextEncoder().encode(cmd + '\n'))
-                        : characteristic.writeValueWithoutResponse(new TextEncoder().encode(cmd + '\n'));
+                    let fullStr = cmd + '\n';
+                    let chunkSize = 20; // หั่นข้อมูลส่งทีละ 20 ตัวอักษรให้พอดีหลอดลม Bluetooth
                     
-                    let timeoutMs = type === 'withResponse' ? 1500 : 1000;
-                    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("BLE Timeout")), timeoutMs));
-                    
-                    await Promise.race([writePromise, timeoutPromise]);
+                    for (let i = 0; i < fullStr.length; i += chunkSize) {
+                        let chunk = fullStr.substring(i, i + chunkSize);
+                        let encoded = new TextEncoder().encode(chunk);
+                        
+                        let writePromise = type === 'withResponse' 
+                            ? characteristic.writeValue(encoded)
+                            : characteristic.writeValueWithoutResponse(encoded);
+                            
+                        let timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("BLE Timeout")), 1500));
+                        
+                        await Promise.race([writePromise, timeoutPromise]);
+                        await new Promise(r => setTimeout(r, 25)); // พักหายใจ 25ms ให้ ESP32 กลืนข้อมูลทัน
+                    }
                     if(resolve) resolve();
                 } catch (e) {
                     console.warn("BLE Write Error:", cmd, e);
