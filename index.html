@@ -2145,6 +2145,8 @@ if (val === "DONE_ALL") {
         function scrubLiveFrame() { 
             if(!characteristic || isPlaying) return; 
             
+           if(document.getElementById('modal').classList.contains('hidden')) return; // <--- ป้องกันการส่งคำสั่ง off มั่วตอนที่หน้าต่าง Edit ซ่อนอยู่
+            
             let activeClips = clips.filter(c => playheadTime >= c.start && playheadTime <= c.start + c.duration);
             if (activeClips.length === 0) {
                 if (!lastSentOff) {
