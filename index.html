@@ -470,7 +470,7 @@
 
                 try {
                     const writePromise = type === 'withResponse' 
-                        ? characteristic.writeValue(new TextEncoder().encode(cmd + '\n'))
+                       ? characteristic.writeValue(new TextEncoder().encode(cmd + '\n'))
                         : characteristic.writeValueWithoutResponse(new TextEncoder().encode(cmd + '\n'));
                     
                     let timeoutMs = type === 'withResponse' ? 1500 : 1000;
