@@ -1444,9 +1444,12 @@ if (val === "DONE_ALL") {
                             if(activeIdxSP === evt.oldIndex) activeIdxSP = evt.newIndex;
                             else if(activeIdxSP === evt.newIndex) activeIdxSP = evt.oldIndex;
                         }
-                        savePatternOrder(layer); 
-                        renderLayerPads(layer); 
-                        setTimeout(() => { isDraggingPad = false; }, 50);
+                        // นำ 3 บรรทัดนี้ไปครอบด้วย setTimeout เพื่อแก้ปัญหาลบ DOM กะทันหันจนโค้ดค้าง
+                        setTimeout(() => {
+                            savePatternOrder(layer); 
+                            renderLayerPads(layer); 
+                            isDraggingPad = false;
+                        }, 50);
                     }
                 };
 
