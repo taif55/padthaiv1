@@ -192,7 +192,7 @@
                             <div id="powerBarText" class="power-text">OFF</div>
                         </div>
                     </div>
-                    <button id="connectBtn" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition">CONNECT</button>
+                    <button id="connectBtn" class="bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition animate-pulse shadow-[0_0_10px_rgba(37,99,235,0.5)]">CONNECT</button>
                 </div>
                <div class="flex items-center space-x-2 w-full">
                             <button id="endSongBtn" onclick="triggerEndSong()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow-[0_0_8px_rgba(147,51,234,0.4)] active:scale-95 transition flex items-center justify-center shrink-0 mr-auto tracking-widest">END</button>
@@ -534,7 +534,7 @@
             
             const btn = document.getElementById('connectBtn'); 
             btn.innerText = "CONNECT"; 
-            btn.className = "bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition"; 
+           btn.className = "bg-blue-600 text-white text-[10px] font-black px-4 py-2 rounded-xl active:scale-95 transition animate-pulse shadow-[0_0_10px_rgba(37,99,235,0.5)]"; 
             updatePowerBar(0); 
             document.getElementById('powerBarText').innerText = "OFF";
             document.getElementById('powerLabel').innerText = "POWER"; 
