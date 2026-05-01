@@ -1496,12 +1496,7 @@ if (val === "DONE_ALL") {
                 }
             }
         }
-        function playFX(idx, btnElement, layer) {
-            clearActiveScaleBtns();
-            const parentBlock = layer === 'BG' ? document.querySelector('.layer-bg') : (layer === 'FG' ? document.querySelector('.layer-fg') : document.querySelector('.layer-sp'));
-            const activeScale = parentBlock ? parentBlock.querySelector('button.bg-green-700') : null;
-            if (activeScale) setActiveScaleBtn(activeScale); 
-
+       function playFX(idx, btnElement, layer) {
             if(isPlaying) {
                 isPlaying = false; 
                 cancelAnimationFrame(playInterval);
@@ -1510,12 +1505,10 @@ if (val === "DONE_ALL") {
             }
             
             let patterns = (layer === 'BG') ? bgPatterns : (layer === 'FG' ? fgPatterns : spPatterns);
+            
             if (layer === 'BG') {
                 activeIdxBG = idx;
                 localStorage.setItem('lastActiveBG', idx); 
-                
-                let liveSlider = document.getElementById('liveSpeedSlider');
-                if(liveSlider) liveSlider.value = 1.0;
                 
                 document.querySelectorAll('#padGridBG .pad-btn').forEach(b => b.classList.remove('playing'));
                 if(btnElement) btnElement.classList.add('playing'); 
@@ -1523,11 +1516,11 @@ if (val === "DONE_ALL") {
 
                 if(!characteristic || !patterns[idx].code) return;
                 
-                let currentScl = parseFloat(document.getElementById('liveSpeedSlider').value);
-                let targetBeats = getBeatsFromSlider(currentScl);
-                
+                // ดึงความเร็วล่าสุดไปคำนวณและเล่นเลยทันที
+                let targetBeats = getBeatsFromSlider(sclDragBaseVal);
                 remoteEditAction('BG', () => setRoomScale(targetBeats));
                 safeBleWrite("T1.00");
+                
             } else if (layer === 'FG') {
                 activeIdxFG = idx;
                 localStorage.setItem('lastActiveFG', idx); 
@@ -1537,7 +1530,12 @@ if (val === "DONE_ALL") {
                 updatePadsVisuals('FG'); 
 
                 if(!characteristic || !patterns[idx].code) return;
-                safeBleWrite("FG:5" + patterns[idx].code);
+                
+                // ดึงความเร็วล่าสุดของ FG ไปคำนวณและเล่นเลยทันที
+                let targetBeats = getBeatsFromSlider(sclDragBaseValFG);
+                remoteEditAction('FG', () => setRoomScale(targetBeats));
+                safeBleWrite("FGT1.00");
+                
             } else if (layer === 'SP') {
                 activeIdxSP = idx;
                 localStorage.setItem('lastActiveSP', idx); 
@@ -1547,7 +1545,11 @@ if (val === "DONE_ALL") {
                 updatePadsVisuals('SP'); 
 
                 if(!characteristic || !patterns[idx].code) return;
-                safeBleWrite("SP:5" + patterns[idx].code);
+                
+                // ดึงความเร็วล่าสุดของ SP ไปคำนวณและเล่นเลยทันที
+                let targetBeats = getBeatsFromSlider(sclDragBaseValSP);
+                remoteEditAction('SP', () => setRoomScale(targetBeats));
+                safeBleWrite("SPT1.00");
             }
         }
 
